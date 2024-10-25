@@ -490,7 +490,7 @@
   "dnc.technicalities.suggestions.unpooled.why": "{unpooledWindows, plural, other {# 次技巧舞步中}}损失了潜在的 <0/> 次数。",
   "dnc.technicalities.title": "技巧舞步窗口内的循环",
   "dnc.technicalities.unpooled.context.opener": "开场爆发",
-  "drg.about.description": "<0>永远不要跳过练腿的日子。这个分析器旨在帮助你保持输出的节奏，并与其他增益效果同步，来确保你的跳跃技能在你的爆发窗口中打出最好的效果。由于龙骑士的循环相当严格，你看到的建议将主要集中在保持这个循环流畅运行，以及检查你的龙血窗口和增益效果对齐相关的问题。</0>",
+  "drg.about.description": "<0>请切勿忽略锻炼腿部肌肉的日子。本分析器的目的是协助您打出合理的循环，并与其他增益效果同步，以确保跳跃技能能够在爆发窗口期内达到最佳表现。鉴于龙骑士的技能循环相当严格，您所接收的建议将主要集中于如何保持这一循环的顺畅运作，以及如何确保红莲龙血与团辅或增益对齐。</0>",
   "drg.battlelitany.title": "战斗连祷",
   "drg.bl.suggestions.missedaction.content": "尽可能把能力技全部打进 <0/> 期间。也尽可能保持能力在冷却，以防能力被延后出buff期。",
   "drg.bl.suggestions.missedgcd.content": "尝试在每个<0/>的持续时间内插入8个GCD技能。",
