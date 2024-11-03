@@ -127,10 +127,19 @@ export class CastTime extends Analyser {
 	/**
 	 * Returns the effective recast time for the specified event
 	 * @param event The event in question
-	 * @returns The actual recast time, either as the default, or the modified time if any modifiers were in effect. Returns undefined i fthe action cannot be determined, or has no gcdRecast/cooldown property defined
+	 * @returns The actual recast time, either as the default, or the modified time if any modifiers were in effect. Returns undefined if the action cannot be determined, or has no gcdRecast/cooldown property defined
 	 */
 	public recastForEvent(event: Events['action'] | Events['prepare']): number | undefined {
 		return this.recastForAction(event.action, event.timestamp)
+	}
+
+	/**
+	 * Returns the effective cast time for the specified event
+	 * @param event The event in question
+	 * @returns The actual cast time, either as the default, or the modified time if any modifiers were in effect. Returns undefined if the action cannot be determined, or has no casttime property defined
+	 */
+	public castForEvent(event: Events['action'] | Events['prepare']): number | undefined {
+		return this.castForAction(event.action, event.timestamp)
 	}
 
 	/**
@@ -146,11 +155,21 @@ export class CastTime extends Analyser {
 	/**
 	 * Returns the effective recast time for the specified action at the specified point in time
 	 * @param actionId The action in question
-	 * @param timestamp Thetimestamp in question
+	 * @param timestamp The timestamp in question
 	 * @returns The actual recast time, either as the default, or the modified time if any modifiers were in effect. Returns undefined if the action cannot be determined, or has no gcdRecast/cooldown property defined
 	 */
 	public recastForAction(actionId: number, timestamp: number = this.parser.currentEpochTimestamp): number | undefined {
 		return this.getAdjustedTime(actionId, timestamp, 'recast')
+	}
+
+	/**
+	 * Returns the effective cast time for the specified action at the specified point in time
+	 * @param actionId The action in question
+	 * @param timestamp The timestamp in question
+	 * @returns The actual cast time, either as the default, or the modified time if any modifiers were in effect. Returns undefined if the action cannot be determined, or has no casttime property defined
+	 */
+	public castForAction(actionId: number, timestamp: number = this.parser.currentEpochTimestamp): number | undefined {
+		return this.getAdjustedTime(actionId, timestamp)
 	}
 
 	/**
