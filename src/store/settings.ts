@@ -4,6 +4,7 @@ export class SettingsStore {
 	@observable killsOnly: boolean = true
 	@observable showMinorSuggestions: boolean = false
 	@observable bypassCacheNextRequest: boolean = false
+	@observable filterABCTable: string | null = null
 
 	@action
 	setViewKillsOnly(value: boolean) {
@@ -18,6 +19,11 @@ export class SettingsStore {
 	@action
 	setBypassCacheNextRequest(value: boolean) {
 		this.bypassCacheNextRequest = value
+	}
+
+	@action
+	setFilterABCTable(value: string) {
+		this.filterABCTable = value
 	}
 }
 
