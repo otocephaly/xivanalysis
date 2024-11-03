@@ -51,7 +51,8 @@ class ABCTableFilter extends React.Component {
 
 	override render() {
 		const tableFilterValue = this.context.settingsStore.filterABCTable
-		const propsABCTables = this.props.ABCTables
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const propsABCTables = (this.props as any).ABCTables
 
 		//since do_nothing is default, leave it in anyway, otherwise hide button
 		const buttonDoNothing: JSX.Element | null =
