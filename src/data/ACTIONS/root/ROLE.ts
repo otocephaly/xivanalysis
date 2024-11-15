@@ -56,7 +56,6 @@ export const ROLE = ensureActions({
 		icon: iconUrl(884),
 		onGcd: true,
 		cooldown: 2500,
-		castTime: 1000,
 		mpCost: 600,
 		mpCostFactor: 5,
 	},
