@@ -66,5 +66,24 @@ export const patch710: Layer<ActionRoot> = {
 		FLARE: {
 			castTime: 3000,
 		},
+
+		// Esuna Role action is now instant
+		ESUNA: {
+			castTime: 0,
+		},
+
+		// SGE MP cost changes
+		PROGNOSIS: {
+			mpCost: 700,
+		},
+		EUKRASIAN_DIAGNOSIS: {
+			mpCost: 800,
+		},
+		EUKRASIAN_PROGNOSIS: {
+			mpCost: 800,
+		},
+		EUKRASIAN_PROGNOSIS_II: {
+			mpCost: 800,
+		},
 	},
 }
