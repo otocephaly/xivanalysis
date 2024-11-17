@@ -85,5 +85,12 @@ export const patch710: Layer<ActionRoot> = {
 		EUKRASIAN_PROGNOSIS_II: {
 			mpCost: 800,
 		},
+		// WHM action changes for 7.1, Holy go brr
+		HOLY: {
+			castTime: 1500,
+		},
+		HOLY_III: {
+			castTime: 1500,
+		},
 	},
 }
