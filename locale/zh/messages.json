@@ -1071,7 +1071,7 @@
   "sge.kardia.checklist.kardia.name": "选择一个<0/>目标",
   "sge.kardia.checklist.kardia.uptime": "<0/>覆盖率（CD时间不计）",
   "sge.kardia.title": "心关",
-  "sge.overheal.direct.name": "共CD治疗",
+  "sge.overheal.direct.name": "GCD治疗",
   "sge.overheal.haima.name": "输血和泛输血超时",
   "sge.swiftcast.missed.suggestion.content": "在<0/>结束之前放一个法术。这样你就可以用<1/>秒拉人或者<2/>来插入能力技。",
   "sge.tincture.suggestions.trackedActions.content": "在爆发药期间打出尽可能多的伤害。",
