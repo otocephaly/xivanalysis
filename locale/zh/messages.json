@@ -683,7 +683,7 @@
   "mnk.brotherhood.missed-window.content": "尽可能保证 <0/> 与 <1/> 对齐以最大化buff利用率。",
   "mnk.brotherhood.missed-window.why": "{missedWindows, plural, other {# 次}} <0/> 没有在 <1/> 期间使用。",
   "mnk.cr.suggestions.content": "使用 <1/> 或 <2/> 而非 <0/>，因为即使在单目标情况下它们仍然有更高的威力。",
-  "mnk.cr.suggestions.why": "由于 {0, plural, one {# 次释放} other {# 次释放}}<0/>，丢失了 {potencyLost} 威力。",
+  "mnk.cr.suggestions.why": "",
   "mnk.forms.suggestions.dropped.content": "避免失去身形。你可能需要突进技或保持更小的距离来避免你的连击因超时而中断。这通常意味着更大的问题",
   "mnk.forms.suggestions.dropped.why": "丢失了{0, plural,one {#次}other {次}}身形。",
   "mnk.forms.suggestions.formless.content": "避免使用除<0/>作为你的连击起手，只有当你进行正确的连击时才会获得连击的增益。",

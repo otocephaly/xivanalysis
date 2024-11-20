@@ -683,7 +683,7 @@
   "mnk.brotherhood.missed-window.content": "Assurez-vous que vos lancements de <0/> s'alignent sur vos fenêtres de <1/> pour maximiser le stacking de buffs.",
   "mnk.brotherhood.missed-window.why": "{missedWindows, plural, one {# utilisation} other {# utilisations}} de <0/> n'a pas été utilisé pendant une fenêtre de <1/>.",
   "mnk.cr.suggestions.content": "Évitez d'utiliser <0/> à la place de <1/> ou <2/> car ils ont une puissance plus élevée même pour une seule cible.",
-  "mnk.cr.suggestions.why": "{potencyLost} puissance perdu à cause de {0, plural,one {# utilisation}other {# utilisations}} sur <0/>.",
+  "mnk.cr.suggestions.why": "",
   "mnk.forms.suggestions.dropped.content": "Évitez de laisser tomber les formes. Vous devrez peut-être utiliser un espace plus proche ou rester plus près de l'ennemi pour éviter que votre combo ne s'arrête. Cela indique généralement un problème plus important.",
   "mnk.forms.suggestions.dropped.why": "Position perdu {0, plural,one {fois.}other {#fois.}}",
   "mnk.forms.suggestions.formless.content": "Évitez d'utiliser des débuts de combo en dehors de <0/> car le bonus de forme n'est activé que dans la forme correcte.",

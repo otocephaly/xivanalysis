@@ -683,7 +683,7 @@
   "mnk.brotherhood.missed-window.content": "",
   "mnk.brotherhood.missed-window.why": "",
   "mnk.cr.suggestions.content": "単体に対して最大のダメージを与えるために<0/>より<1/>か<2/>を使ってください。",
-  "mnk.cr.suggestions.why": "<0/>{0, plural,other {#回}}を使った故に{potencyLost}威力がなくなりました。",
+  "mnk.cr.suggestions.why": "",
   "mnk.forms.suggestions.dropped.content": "型の効果が落ちないように頑張ってください。GCDやコンボが続けるめに、できれば敵から離れないようにしてください。そうすると型の効果が更新されます。",
   "mnk.forms.suggestions.dropped.why": "型の効果時間が切れた回数：{0, plural, one {#回} other {#回}}",
   "mnk.forms.suggestions.formless.content": "",
