@@ -4,6 +4,26 @@ import React from 'react'
 
 export const changelog = [
 	{
+		date: new Date('2024-11-16'),
+		Changes: () => <>Add a table displaying timestamps when procs were dropped or overwritten, for better clarity around when those issues occurred.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU],
+	},
+	{
+		date: new Date('2024-11-14'),
+		Changes: () => <>Mark Viper supported for 7.1</>,
+		contributors: [CONTRIBUTORS.RYAN],
+	},
+	{
+		date: new Date('2024-10-21'),
+		Changes: () => <> Fixed Bug with <DataLink action="UNCOILED_FURY" /> not being tracked correctly in the checklist.</>,
+		contributors: [CONTRIBUTORS.RYAN],
+	},
+	{
+		date: new Date('2024-10-20'),
+		Changes: () => <>Disabled feedback modules that were implmented for 7.05 Viper Changes</>,
+		contributors: [CONTRIBUTORS.RYAN],
+	},
+	{
 		date: new Date('2024-10-02'),
 		Changes: () => <>Expand <DataLink action="SERPENTS_TAIL"/> checklist and add <DataLink action="VICEWINDER"/> and <DataLink action="VICEPIT"/> checklist.</>,
 		contributors: [CONTRIBUTORS.RYAN],

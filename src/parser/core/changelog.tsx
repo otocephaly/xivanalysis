@@ -10,9 +10,19 @@ export const changelog: ChangelogEntry[] = [
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
 	{
-		date: new Date('2024-10-19'),
+		date: new Date('2024-11-21'),
 		Changes: () => <>Fixed prepull actions for defensives for duplicates, weird counts, and missing suggested available times. </>,
 		contributors: [CONTRIBUTORS.AKAIRYU, CONTRIBUTORS.AZARIAH, CONTRIBUTORS.OTOCEPHALY],
+	},
+	{
+		date: new Date('2024-11-13'),
+		Changes: () => <>Fix status icon assets in response to a change in the underlying game data.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU],
+	},
+	{
+		date: new Date('2024-11-10'),
+		Changes: () => <>Fixed an issue causing GCD uptime calculation to be overly generous when a pull ended on an instant-casted spell that normally has a cast time.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU],
 	},
 	{
 		date: new Date('2024-08-27'),
