@@ -102,7 +102,7 @@ export class Defensives extends Analyser {
 
 	private checkForPrepull(defensive: Action): boolean {
 		let prepullBoolean: boolean = false
-		if (this.getGroupUses(defensive).length > 0 && this.getGroupUses(defensive)[0].start < this.parser.pull.timestamp) { prepullBoolean = true }
+		if (this.getGroupUses(defensive).length > 0 && this.getGroupUses(defensive)[0].start <= this.parser.pull.timestamp) { prepullBoolean = true }
 		return prepullBoolean
 	}
 
@@ -175,7 +175,8 @@ export class Defensives extends Analyser {
 	private getAdditionalUsageData(defensive: Action, timestamp: number = this.parser.pull.timestamp): {chargesBeforeNextUse: number, availableTimestamp: number, useByTimestamp: number} {
 		let availableTimestamp: number, currentCharges
 
-		if (timestamp === this.parser.pull.timestamp) {
+		//assume at the beginning of the fight if it's not prepulled then it was available from the beginning with the expected charges, else calculate like normal
+		if (timestamp === this.parser.pull.timestamp && !this.checkForPrepull(defensive)) {
 			availableTimestamp = this.parser.pull.timestamp
 			currentCharges = defensive.charges || 1
 		} else {
