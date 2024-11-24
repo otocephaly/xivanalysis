@@ -96,5 +96,18 @@ export const patch710: Layer<ActionRoot> = {
 		CRIMSON_CYCLONE: {
 			statusesApplied: ['CRIMSON_STRIKE_READY'],
 		},
+
+		RESOLUTION: {
+			potency: 850,
+		},
+		SCORCH: {
+			potency: 750,
+		},
+		VERFLARE: {
+			potency: 650,
+		},
+		VERHOLY: {
+			potency: 650,
+		},
 	},
 }
