@@ -1,8 +1,13 @@
-import {ActionLink} from 'components/ui/DbLink'
+import {ActionLink, StatusLink} from 'components/ui/DbLink'
 import CONTRIBUTORS from 'data/CONTRIBUTORS'
 import React from 'react'
 
 export const changelog = [
+	{
+		date: new Date('2024-11-19'),
+		Changes: () => <>Refine the suggestion for bad actions used during <StatusLink status="RIDDLE_OF_FIRE" /> windows to ignore downtime</>,
+		contributors: [CONTRIBUTORS.HINT],
+	},
 	{
 		date: new Date('2024-11-19'),
 		Changes: () => <>Refine the suggestion for Nadi overcap to only show when a use of <ActionLink action="PHANTOM_RUSH" /> was lost</>,
