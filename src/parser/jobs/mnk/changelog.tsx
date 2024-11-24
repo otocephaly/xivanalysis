@@ -4,6 +4,11 @@ import React from 'react'
 
 export const changelog = [
 	{
+		date: new Date('2024-11-19'),
+		Changes: () => <>Refine the suggestion for Nadi overcap to only show when a use of <ActionLink action="PHANTOM_RUSH" /> was lost</>,
+		contributors: [CONTRIBUTORS.HINT],
+	},
+	{
 		date: new Date('2024-11-12'),
 		Changes: () => <>Mark Monk as supported for patch 7.1</>,
 		contributors: [CONTRIBUTORS.HINT],
