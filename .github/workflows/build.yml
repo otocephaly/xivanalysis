@@ -10,7 +10,8 @@ on:
     - ui
 
 jobs:
-  checks-pass:
+  checks:
+    if: github.repository_owner == 'xivanalysis'
     uses: ./.github/workflows/checks.yml
 
   # TODO: ok everything from this point on should only execute for actual merges
