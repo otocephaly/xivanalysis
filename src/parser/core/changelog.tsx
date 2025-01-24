@@ -11,6 +11,11 @@ export const changelog: ChangelogEntry[] = [
 	// },
 	{
 		date: new Date('2024-12-03'),
+		Changes: () => <>Fixed an issue with gauge stack backtrack corrections when modified by events prior to the start of combat.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU, CONTRIBUTORS.AZARIAH, CONTRIBUTORS.OTOCEPHALY],
+	},
+	{
+		date: new Date('2024-12-03'),
 		Changes: () => <>Fixed an issue causing initial hits on newly spawned adds to sometimes be treated as hits against an invulnerable target.</>,
 		contributors: [CONTRIBUTORS.AKAIRYU],
 	},
