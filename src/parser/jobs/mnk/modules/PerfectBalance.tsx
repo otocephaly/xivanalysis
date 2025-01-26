@@ -13,9 +13,9 @@ import {SetGauge} from 'parser/core/modules/Gauge/SetGauge'
 import {GAUGE_FADE} from 'parser/core/modules/ResourceGraphs/ResourceGraphs'
 import Suggestions, {SEVERITY, Suggestion, TieredSuggestion} from 'parser/core/modules/Suggestions'
 import React from 'react'
+import {fillActionIds} from 'utilities/fillArrays'
 import {BLITZ_ACTIONS, COEURL_ACTIONS, FORM_ACTIONS, OPO_OPO_ACTIONS, RAPTOR_ACTIONS} from './constants'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
-import {fillActions} from './utilities'
 
 const BEAST_GAUGE_HANDLE = 'beastgauge'
 const NADI_GAUGE_HANDLE = 'nadigauge'
@@ -26,6 +26,7 @@ const LUNAR_VALUE = 'lunar'
 const SOLAR_VALUE = 'solar'
 
 const BEAST_GAUGE_TIMEOUT_MILLIS = 20000
+const BLITZES_PER_PHANTOM_RUSH = 3
 
 const SUGGESTION_TIERS = {
 	1: SEVERITY.MEDIUM,
@@ -128,12 +129,12 @@ export class PerfectBalance extends Gauge {
 	override initialise() {
 		super.initialise()
 
-		this.badActions = fillActions(PB_BAD_ACTIONS, this.data)
-		this.formActions = fillActions(FORM_ACTIONS, this.data)
-		this.opoActions = fillActions(OPO_OPO_ACTIONS, this.data)
-		this.raptorActions = fillActions(RAPTOR_ACTIONS, this.data)
-		this.coeurlActions = fillActions(COEURL_ACTIONS, this.data)
-		this.blitzActions = fillActions(BLITZ_ACTIONS, this.data)
+		this.badActions = fillActionIds(PB_BAD_ACTIONS, this.data)
+		this.formActions = fillActionIds(FORM_ACTIONS, this.data)
+		this.opoActions = fillActionIds(OPO_OPO_ACTIONS, this.data)
+		this.raptorActions = fillActionIds(RAPTOR_ACTIONS, this.data)
+		this.coeurlActions = fillActionIds(COEURL_ACTIONS, this.data)
+		this.blitzActions = fillActionIds(BLITZ_ACTIONS, this.data)
 
 		const playerFilter = filter<Event>().source(this.parser.actor.id)
 		this.addEventHook(playerFilter.type('statusApply').status(this.data.statuses.PERFECT_BALANCE.id), this.onStacc)
@@ -141,6 +142,23 @@ export class PerfectBalance extends Gauge {
 		this.addEventHook(playerFilter.type('action').action(oneOf(this.blitzActions)), this.onBlitz)
 
 		this.addEventHook('complete', this.onComplete)
+	}
+
+	public lostPhantomRushes(): number {
+		const nadiOvercap = this.nadiGauge.overcap
+		const guaranteedLostPRs = Math.floor(nadiOvercap / BLITZES_PER_PHANTOM_RUSH)
+		const remainingOvercap = nadiOvercap % BLITZES_PER_PHANTOM_RUSH
+		const hasLunarNadi = this.nadiGauge.getStateAt(LUNAR_VALUE)
+		const hasSolarNadi = this.nadiGauge.getStateAt(SOLAR_VALUE)
+
+		switch (remainingOvercap) {
+		case 2:
+			return (hasLunarNadi || hasSolarNadi) ? guaranteedLostPRs + 1 : guaranteedLostPRs
+		case 1:
+			return (hasLunarNadi && hasSolarNadi) ? guaranteedLostPRs + 1 : guaranteedLostPRs
+		default:
+			return guaranteedLostPRs
+		}
 	}
 
 	// Determine if perfect balance is active at the specified timestamp. It's active if:
@@ -303,17 +321,17 @@ export class PerfectBalance extends Gauge {
 			</Trans>,
 		}))
 
-		// Future TODO: Calculate whether the overcap mattered
 		const nadiOvercap = this.nadiGauge.overcap
-		if (nadiOvercap > 1) { // Start at 2 since 1 might be expected depending on opener
+		const lostPhantomRushes = this.lostPhantomRushes()
+		if (lostPhantomRushes > 0) {
 			this.suggestions.add(new Suggestion({
 				icon: this.data.actions.PHANTOM_RUSH.icon,
 				content: <Trans id="mnk.pb.suggestions.nadi-overcap.content">
-					Generating a Lunar or Solar Nadi while already in possession of that Nadi means fewer uses of <DataLink action="PHANTOM_RUSH" /> over the course of the fight. Try not to overcap either of your Nadis.
+					Generating a Lunar or Solar Nadi while already in possession of that Nadi can lead to fewer uses of <DataLink action="PHANTOM_RUSH" /> over the course of the fight. After the opener, try to avoid generating a Nadi that you already have.
 				</Trans>,
-				severity: SEVERITY.MAJOR,
+				severity: nadiOvercap === 1 ? SEVERITY.MINOR : SEVERITY.MAJOR,
 				why: <Trans id="mnk.pb.suggestions.nadi-overcap.why">
-					You generated a Nadi while already in possession of that Nadi <Plural value={nadiOvercap} one="# time" other="# times" />.
+					You lost <Plural value={lostPhantomRushes} one="# use" other="# uses" /> of <DataLink action="PHANTOM_RUSH" /> by generating a Nadi while already in possession of that Nadi <Plural value={nadiOvercap} one="# time" other="# times" />.
 				</Trans>,
 			}))
 		}
