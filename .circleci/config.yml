@@ -125,7 +125,9 @@ workflows:
   version: 2
   flow:
     jobs:
-      - setup
+      - setup:
+          requires:
+            - circle-ci-is-disabled-and-will-likely-be-removed-entirely-soon
       - lint:
           requires:
             - setup
