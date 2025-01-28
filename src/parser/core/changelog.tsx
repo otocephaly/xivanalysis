@@ -10,6 +10,11 @@ export const changelog: ChangelogEntry[] = [
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
 	{
+		date: new Date('2025-01-26'),
+		Changes: () => <>Updated Overheal analysis for all healers and Blue Mage.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU],
+	},
+	{
 		date: new Date('2025-01-04'),
 		Changes: () => <>Fixed an issue where raid buff overwrite analysis incorrectly reported issues when the other player was in a different alliance party. </>,
 		contributors: [CONTRIBUTORS.AKAIRYU],
