@@ -125,9 +125,7 @@ workflows:
   version: 2
   flow:
     jobs:
-      - setup:
-          requires:
-            - circle-ci-is-disabled-and-will-likely-be-removed-entirely-soon
+      - setup
       - lint:
           requires:
             - setup
@@ -141,11 +139,7 @@ workflows:
           filters:
             branches:
               only:
-                - stormblood
-                - shadowbringers
-                - endwalker
-                - dawntrail
-                - ui
+                - circle-ci-is-disabled-and-will-likely-be-removed-entirely-soon
       - deploy:
           requires:
             - build
