@@ -1,8 +1,7 @@
 <p align="center"><a href="https://xivanalysis.com/" alt="xivanalysis"><img src="https://raw.githubusercontent.com/ackwell/xivanalysis/master/public/logo.png" alt="logo"></a></p>
 <h1 align="center">xivanalysis</h1>
 <p align="center">
-	<a href="https://github.com/xivanalysis/xivanalysis/actions/workflows/build.yml" title="Build"><img src="https://img.shields.io/github/actions/workflow/status/xivanalysis/xivanalysis/build.yml?style=flat-square
-	" alt="Build"></a>
+	<a href="https://github.com/xivanalysis/xivanalysis/actions/workflows/build.yml" title="Build"><img src="https://img.shields.io/github/actions/workflow/status/xivanalysis/xivanalysis/build.yml?style=flat-square" alt="Build"></a>
 	<a href="https://discord.gg/jVbVe44" title="Discord"><img src="https://img.shields.io/discord/441414116914233364.svg?style=flat-square&amp;logo=discord&amp;colorB=7289DA" alt="Discord"></a>
 </p>
 
