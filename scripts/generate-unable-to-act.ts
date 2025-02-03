@@ -33,7 +33,7 @@ interface UTAStatus {
 }
 
 async function main() {
-	const {data} = await axios.get<XivapiResponse<XivapiStatus>>('https://beta.xivapi.com/api/1/search?sheets=Status&query=LockActions=1 LockControl=1&fields=LockActions,LockControl,Name&limit=500')
+	const {data} = await axios.get<XivapiResponse<XivapiStatus>>('https://v2.xivapi.com/api/search?sheets=Status&query=LockActions=1 LockControl=1&fields=LockActions,LockControl,Name&limit=500')
 
 	if (data.next != null) {
 		throw new Error('too many results, pagination needs to be handled')

@@ -30,11 +30,12 @@ export function Provider({children}: ProviderProps) {
 	// const baseUrl = i18nStore.gameLanguage === Language.CHINESE
 	// 	? 'https://cafemaker.wakingsands.com'
 	// 	: undefined
+	const baseUrl = 'https://v2.xivapi.com/api'
 
 	return useObserver(() => (
 		<TooltipProvider
 			language={i18nStore.safeGameLanguage}
-			// baseUrl={baseUrl}
+			baseUrl={baseUrl}
 		>
 			{children}
 		</TooltipProvider>
@@ -132,8 +133,7 @@ function Label({
 			/>
 		)
 
-	const name: ReactNode = undefined
-		?? children
+	const name: ReactNode = children
 		?? data?.name
 		?? providedName
 		?? <Trans id="core.dblink.loading">Loading...</Trans>
