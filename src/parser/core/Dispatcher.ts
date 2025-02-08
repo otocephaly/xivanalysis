@@ -74,7 +74,6 @@ export class Dispatcher {
 		const queue = this.timestampHookQueue
 		while (queue.length > 0 && queue[queue.length - 1].timestamp <= timestamp) {
 			// Enforced by the while loop.
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			const hook = queue.pop()!
 
 			// If we're not trigering on this module, skip the hook. This effectively removes it.
@@ -87,6 +86,10 @@ export class Dispatcher {
 			try {
 				hook.callback({timestamp: hook.timestamp})
 			} catch (error) {
+				if (!(error instanceof Error)) {
+					throw error
+				}
+
 				issues.push({handle: hook.handle, error})
 			}
 		}
@@ -111,6 +114,10 @@ export class Dispatcher {
 					hook.callback(event)
 				}
 			} catch (error) {
+				if (!(error instanceof Error)) {
+					throw error
+				}
+
 				// If there was an error in any, stop immediately & report
 				issues.push({handle, error})
 				continue
