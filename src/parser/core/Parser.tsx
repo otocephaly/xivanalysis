@@ -1,7 +1,7 @@
 import {MessageDescriptor} from '@lingui/core'
 import * as Sentry from '@sentry/browser'
 import {ResultSegment} from 'components/ReportFlow/Analyse/ResultSegment'
-import ErrorMessage from 'components/ui/ErrorMessage'
+import {ErrorMessage} from 'components/ui/ErrorMessage'
 import {getReportPatch, Patch} from 'data/PATCHES'
 import {DependencyCascadeError, ModulesNotFoundError} from 'errors'
 import {Event} from 'event'
@@ -10,7 +10,7 @@ import {Report, Pull, Actor} from 'report'
 import toposort from 'toposort'
 import {extractErrorContext, isDefined, formatDuration} from 'utilities'
 import {Analyser, DisplayMode} from './Analyser'
-import {Dispatcher} from './Dispatcher'
+import {Dispatcher, DispatcherImpl} from './Dispatcher'
 import {Injectable, MappedDependency} from './Injectable'
 import {Meta} from './Meta'
 
@@ -38,7 +38,7 @@ export interface CompleteEvent {
 	timestamp: number
 }
 
-class Parser {
+export class Parser {
 	// -----
 	// Properties
 	// -----
@@ -85,7 +85,7 @@ class Parser {
 
 		dispatcher?: Dispatcher
 	}) {
-		this.dispatcher = opts.dispatcher ?? new Dispatcher()
+		this.dispatcher = opts.dispatcher ?? new DispatcherImpl()
 
 		this.meta = opts.meta
 
@@ -465,5 +465,3 @@ class Parser {
 		ResultSegment.scrollIntoView((module.constructor as typeof Injectable).handle)
 	}
 }
-
-export default Parser

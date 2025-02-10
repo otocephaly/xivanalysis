@@ -1,6 +1,5 @@
-import ContributorLabel from 'components/ui/ContributorLabel'
+import {ContributorLabel} from 'components/ui/ContributorLabel'
 import {ChangelogEntry} from 'parser/core/Meta'
-import * as PropTypes from 'prop-types'
 import {Fragment, MouseEvent, PureComponent} from 'react'
 import {Accordion, AccordionTitleProps} from 'semantic-ui-react'
 import styles from './ChangeLog.module.css'
@@ -9,15 +8,7 @@ interface ChangeLogProps {
 	changelog: ChangelogEntry[]
 }
 
-export default class ChangeLog extends PureComponent<ChangeLogProps> {
-	static propTypes = {
-		changelog: PropTypes.arrayOf(PropTypes.shape({
-			date: PropTypes.instanceOf(Date),
-			contributors: PropTypes.array,
-			changes: PropTypes.string,
-		})),
-	}
-
+export class ChangeLog extends PureComponent<ChangeLogProps> {
 	override state = {
 		activeIndexes: new Set(),
 	}

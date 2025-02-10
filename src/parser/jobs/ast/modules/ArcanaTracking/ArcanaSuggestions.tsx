@@ -11,9 +11,9 @@ import {Data} from 'parser/core/modules/Data'
 import {Timeline} from 'parser/core/modules/Timeline'
 import {Button, Table} from 'semantic-ui-react'
 import {PLAY_I, PLAY_II, PLAY_III} from '../ArcanaGroups'
-import DISPLAY_ORDER from '../DISPLAY_ORDER'
+import {DISPLAY_ORDER} from '../DISPLAY_ORDER'
 import styles from './ArcanaSuggestions.module.css'
-import ArcanaTracking, {CardState} from './ArcanaTracking'
+import {ArcanaTracking, CardState} from './ArcanaTracking'
 
 const TIMELINE_UPPER_MOD = 30000 // in ms
 
@@ -22,7 +22,7 @@ interface CardLog extends CardState {
 	targetJob: Actor['job']
 }
 
-export default class ArcanaSuggestions extends Analyser {
+export class ArcanaSuggestions extends Analyser {
 	static override handle = 'arcanaSuggestions'
 
 	static override title = t('ast.arcana-suggestions.title')`Arcana Logs`

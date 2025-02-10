@@ -10,7 +10,7 @@ import {dependency} from 'parser/core/Injectable'
 import {Data} from 'parser/core/modules/Data'
 import {InitEvent} from 'parser/core/Parser'
 import {DRAW, PLAY_I, PLAY_II_III, PLAY_II, PLAY_III, MINOR_ARCANA, OFFENSIVE_ARCANA_STATUS, DEFENSIVE_ARCANA_STATUS} from '../ArcanaGroups'
-import DISPLAY_ORDER from '../DISPLAY_ORDER'
+import {DISPLAY_ORDER} from '../DISPLAY_ORDER'
 
 const CARD_ACTIONS: Array<keyof ActionRoot> = [
 	...PLAY_I,
@@ -30,7 +30,7 @@ export interface CardState extends CardSlotMap {
 }
 
 // TODO: Try to track for when a seal was not given on pull due to latency?
-export default class ArcanaTracking extends Analyser {
+export class ArcanaTracking extends Analyser {
 	static override handle = 'arcanaTracking'
 	static override title = t('ast.arcana-tracking.title')`Arcana Tracking`
 	static override displayOrder = DISPLAY_ORDER.ARCANA_TRACKING
