@@ -2,7 +2,7 @@ import {Container} from 'akkd'
 import classnames from 'classnames'
 import _ from 'lodash'
 import {useContext, useEffect, useState} from 'react'
-import {Link, Route, Switch, useRouteMatch, Redirect, useLocation} from 'react-router-dom'
+import {Link, Route, useLocation, Routes, Navigate} from 'react-router-dom'
 import {reportSources} from 'reportSources'
 import {Icon} from 'semantic-ui-react'
 import {StoreContext} from 'store'
@@ -28,12 +28,17 @@ export function App() {
 
 	const onHome = pathname === '/'
 
-	return <>
-		{/* If there's a trailing slash, strip it */}
-		<Route path="/*/" exact strict>
-			<StripTrailingSlash/>
-		</Route>
+	// Strip trailing slashes for everything beyond home.
+	if (!onHome && pathname.endsWith('/')) {
+		return (
+			<Navigate
+				to={_.trimEnd(pathname, '/')}
+				replace={true}
+			/>
+		)
+	}
 
+	return <>
 		<div className={classnames(
 			styles.mobileHeader,
 			onHome && styles.home,
@@ -73,24 +78,19 @@ export function App() {
 
 			<Container className={styles.content}>
 				<ErrorBoundary>
-					<Switch>
-						<Route exact path="/"><Home/></Route>
-						<Route path="/report-redirect/:input(.+)"><ReportRedirect/></Route>
+					<Routes>
+						<Route index={true} element={<Home/>}/>
+						<Route path="/report-redirect/*" element={<ReportRedirect/>}/>
 
 						{/* Report sources*/}
 						{reportSources.map(source => (
 							<Route key={source.path} path={source.path}>
-								<source.Component/>
+								<Route index path="*" element={<source.Component/>}/>
 							</Route>
 						))}
-					</Switch>
+					</Routes>
 				</ErrorBoundary>
 			</Container>
 		</div>
 	</>
-}
-
-function StripTrailingSlash() {
-	const {url} = useRouteMatch()
-	return <Redirect to={_.trimEnd(url, '/')}/>
 }
