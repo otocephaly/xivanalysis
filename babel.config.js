@@ -7,9 +7,8 @@ const getPlugins = ({
 		isTSX,
 		allowDeclareFields: true,
 	}],
-	['@babel/plugin-proposal-decorators', {legacy: true}],
-	['@babel/plugin-proposal-class-properties', {loose: true}],
-	['@babel/plugin-proposal-private-methods', {loose: true}],
+	['@babel/plugin-proposal-decorators', {version: "2023-11"}],
+	'@babel/plugin-transform-class-properties',
 	'babel-plugin-macros',
 	'babel-plugin-lodash',
 	'./locale/babel-plugin-transform-react.js',
@@ -28,11 +27,12 @@ const needsNodeTarget = caller =>
 module.exports = api => ({
 	presets: [
 		['@babel/preset-env', {
+			bugfixes: true,
 			// If running under register, we need to swap down to node target, otherwise
 			// permit fallback to browserslist config handling.
-			targets: api.caller(needsNodeTarget)
-				? {node: true}
-				: undefined,
+			...api.caller(needsNodeTarget)
+				? {targets: {node: true}, include: ['proposal-class-static-block']}
+				: {},
 		}],
 		['@babel/preset-react', {
 			development: api.env('development'),
