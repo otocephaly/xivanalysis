@@ -1,10 +1,10 @@
 import {action, observable} from 'mobx'
 
 export class SettingsStore {
-	@observable killsOnly: boolean = true
-	@observable showMinorSuggestions: boolean = false
-	@observable bypassCacheNextRequest: boolean = false
-	@observable filterABCTable: string | null = null
+	@observable accessor killsOnly: boolean = true
+	@observable accessor showMinorSuggestions: boolean = false
+	@observable accessor bypassCacheNextRequest: boolean = false
+	@observable accessor filterABCTable: string | null = null
 
 	@action
 	setViewKillsOnly(value: boolean) {
@@ -22,7 +22,7 @@ export class SettingsStore {
 	}
 
 	@action
-	setFilterABCTable(value: string) {
+	setFilterABCTable(value: string | null) {
 		this.filterABCTable = value
 	}
 }

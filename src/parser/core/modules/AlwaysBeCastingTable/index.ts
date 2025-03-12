@@ -1,1 +1,1 @@
-export {default as ABCTable} from './AlwaysBeCastingTable'
+export {ABCTable} from './AlwaysBeCastingTable'

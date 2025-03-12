@@ -1,22 +1,21 @@
 import {t} from '@lingui/macro'
 import {Trans} from '@lingui/react'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
-import Rotation from 'components/ui/Rotation'
+import {Rotation} from 'components/ui/Rotation'
 import {Action} from 'data/ACTIONS'
 import {Attribute, Event, Events} from 'event'
 import {Analyser} from 'parser/core/Analyser'
 import {EventHook} from 'parser/core/Dispatcher'
 import {filter} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
-import Downtime from 'parser/core/modules/Downtime'
+import {Downtime} from 'parser/core/modules/Downtime'
 import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {Timeline} from 'parser/core/modules/Timeline'
-import React from 'react'
 import {Table, Button, Message} from 'semantic-ui-react'
-import CastTime from '../CastTime'
+import {CastTime} from '../CastTime'
 import {Data} from '../Data'
-import DISPLAY_ORDER from '../DISPLAY_ORDER'
-import ABCTableFilterComponent from './Component'
+import {DISPLAY_ORDER} from '../DISPLAY_ORDER'
+import {ABCTableExport} from './Component'
 
 //value to be added to the gcd to avoid false positives. 100ms for caster tax, 50ms for gcd jitter.
 const GCD_JITTER_OFFSET = 50
@@ -61,7 +60,7 @@ export const ABC_TABLE_NOTES = {
 	DEATH_NOTE: <><Trans id="core.always-be-casting-table.notes-death">Deaths are included here to provide additional context for the fight. Please note that this time is not included in the GCD uptime in the above ABC checklist.</Trans></>,
 }
 
-export default class ABCTable extends Analyser {
+export class ABCTable extends Analyser {
 	static override handle = 'alwaysbecastingtable'
 	static override title = t('core.always-be-casting-table.title')`Always Be Casting (ABC) Fundamentals`
 	static override displayOrder = DISPLAY_ORDER.ABC_TABLE
@@ -485,6 +484,6 @@ export default class ABCTable extends Analyser {
 		}
 
 		// Rendering is in a specialised component so it's got some state to work with
-		return <ABCTableFilterComponent ABCTables={ABCTablePlaceHolder}/>
+		return <ABCTableExport abctables={ABCTablePlaceHolder}/>
 	}
 }
