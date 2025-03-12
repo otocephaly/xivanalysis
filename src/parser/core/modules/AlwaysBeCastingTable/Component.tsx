@@ -40,32 +40,25 @@ export const ABCTableExport = observer(function ABCTableExport({abctables}: ABCT
 		[settingsStore],
 	)
 
-	//used to reset to default on page reload
-	/*const componentDidMount = useCallback(
-		(_: ButtonProps) =>
-			settingsStore.setFilterABCTable(null),
-		[settingsStore],
-	)*/
-
 	const tableFilterValue = settingsStore.filterABCTable
 
-	//since do_nothing is default, leave it in anyway, otherwise hide button
-	const buttonDoNothing: JSX.Element | null =
-	abctables.doNothing === null
-		? null
-		: <><Button value={ABC_FILTER_VALUES.DO_NOTHING} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.DO_NOTHING}</Button></>
+	//since weaving is default, leave it in anyway, otherwise hide button
 	const buttonWeaving: JSX.Element | null =
 	abctables.weaves === null
 		? null
-		: <><Button data={ABC_FILTER_VALUES.WEAVING} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.WEAVING}</Button></>
+		: <><Button value={ABC_FILTER_VALUES.WEAVING} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.WEAVING}</Button></>
 	const buttonInterrupts: JSX.Element | null =
 	abctables.interrupts === null
 		? null
-		: <><Button data={ABC_FILTER_VALUES.INTERRUPT} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.INTERRUPT}</Button></>
+		: <><Button value={ABC_FILTER_VALUES.INTERRUPT} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.INTERRUPT}</Button></>
 	const buttonDeaths: JSX.Element | null =
 	abctables.deaths === null
 		? null
-		: <><Button data={ABC_FILTER_VALUES.DEATH} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.DEATH}</Button></>
+		: <><Button value={ABC_FILTER_VALUES.DEATH} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.DEATH}</Button></>
+	const buttonDoNothing: JSX.Element | null =
+		abctables.doNothing === null
+			? null
+			: <><Button value={ABC_FILTER_VALUES.DO_NOTHING} onClick={onSetFilterABCTableNothing}>{ABC_BUTTON_VALUES.DO_NOTHING}</Button></>
 
 	let ABCTable: JSX.Element | null = <></>
 	switch (tableFilterValue) {
@@ -98,10 +91,10 @@ export const ABCTableExport = observer(function ABCTableExport({abctables}: ABCT
 
 	return <>
 		<ButtonGroup>
-			{buttonDoNothing}
 			{buttonWeaving}
 			{buttonInterrupts}
 			{buttonDeaths}
+			{buttonDoNothing}
 		</ButtonGroup>
 		<br/>
 		{ABCTable}
