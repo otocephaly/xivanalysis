@@ -16,6 +16,7 @@ export interface RuleProps {
 	requirements: Requirement[],
 	target?: number,
 	displayOrder?: number,
+	footnote?: ReactNode,
 }
 
 export class Rule {
@@ -24,6 +25,7 @@ export class Rule {
 	requirements: Requirement[]
 	target: number
 	displayOrder: number
+	footnote: ReactNode
 
 	get passed(): boolean {
 		return this.percent >= this.target
@@ -41,5 +43,6 @@ export class Rule {
 		this.requirements = props.requirements
 		this.target = props.target ?? DEFAULT_TARGET
 		this.displayOrder = props.displayOrder ?? DisplayOrder.DEFAULT
+		this.footnote = props.footnote
 	}
 }

@@ -1,4 +1,5 @@
 import {ActionTimeline} from './ActionTimeline'
+import ABCTable from './AlwaysBeCastingTable'
 import {CooldownDowntime} from './CooldownDowntime'
 import {Defensives} from './Defensives'
 import {DoTs} from './DoTs'
@@ -12,6 +13,7 @@ import {Weaving} from './Weaving'
 import {Zoe} from './Zoe'
 
 export const modules = [
+	ABCTable,
 	ActionTimeline,
 	CooldownDowntime,
 	Defensives,

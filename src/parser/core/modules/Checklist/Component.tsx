@@ -64,6 +64,7 @@ export function Checklist({rules}:ChecklistProps) {
 							</li>,
 						)}
 					</ul>
+					{rule.footnote}
 				</>,
 			},
 		}
