@@ -1,4 +1,4 @@
-import {Weaving as CoreWeaving, Weave} from 'parser/core/modules/Weaving'
+import {ABCWindow, AlwaysBeCasting as CoreAlwaysBeCasting} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
 
 // Due to Greased Lightning, Monk frequently hits GCD speeds that make double
 // weaving without clipping really close to the wire, to the point implementation
@@ -8,15 +8,15 @@ import {Weaving as CoreWeaving, Weave} from 'parser/core/modules/Weaving'
 // clipping is insufficient to outweigh the damage benefit. We're hard overriding
 // with a permitted double weave here to account for that case - the ABC module
 // will report on any significant downtime stemming from this, or otherwise.
-const REGULAR_MAX_WEAVES = 2
 const SSS_MAX_WEAVES = 4
 
-export class Weaving extends CoreWeaving {
-	protected override getMaxWeaves(weave: Weave) {
-		if (weave.leadingGcdEvent?.action === this.data.actions.SIX_SIDED_STAR.id) {
-			return SSS_MAX_WEAVES
-		}
+export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 
-		return REGULAR_MAX_WEAVES
+	protected override determineBadWeave(window: ABCWindow) {
+		let checkIfBadMNK = super.determineBadWeave(window)
+		if (window.startAction !== undefined && window.startAction.action === this.data.actions.SIX_SIDED_STAR.id) {
+			checkIfBadMNK = window.actions.length > SSS_MAX_WEAVES
+		}
+		return checkIfBadMNK
 	}
 }

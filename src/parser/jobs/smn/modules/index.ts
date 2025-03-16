@@ -1,7 +1,6 @@
 import {Interrupts} from 'parser/core/modules/Interrupts'
 import {PetTimeline} from 'parser/core/modules/PetTimeline'
 import {Tincture} from 'parser/core/modules/Tincture'
-import {Weaving} from 'parser/core/modules/Weaving'
 import {ActionTimeline} from './ActionTimeline'
 import {Aetherflow} from './Aetherflow'
 import {GeneralCDDowntime} from './GeneralCDDowntime'
@@ -27,5 +26,4 @@ export const modules = [
 	Summons,
 	Swiftcast,
 	Tincture,
-	Weaving,
 ]

@@ -28,7 +28,6 @@ import {StatusTimeline} from './StatusTimeline'
 import {Suggestions} from './Suggestions'
 import {Timeline} from './Timeline'
 import {UnableToAct} from './UnableToAct'
-import {Weaving} from './Weaving'
 
 export const modules = [
 	About,
@@ -61,5 +60,4 @@ export const modules = [
 	Suggestions,
 	Timeline,
 	UnableToAct,
-	Weaving,
 ]

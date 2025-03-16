@@ -1,4 +1,5 @@
 import {ActionTimeline} from './ActionTimeline'
+import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {AoE} from './AoE'
 import {Balls} from './Balls'
 import {Bookending} from './Bookending'
@@ -15,7 +16,6 @@ import {Replies} from './Replies'
 import {Revolution} from './Revolution'
 import {RiddleOfFire} from './RiddleOfFire'
 import {RiddleOfWind} from './RiddleOfWind'
-import {Weaving} from './Weaving'
 
 export const modules = [
 	ActionTimeline,
@@ -35,5 +35,5 @@ export const modules = [
 	RiddleOfFire,
 	RiddleOfWind,
 	PerfectBalance,
-	Weaving,
+	AlwaysBeCasting,
 ]
