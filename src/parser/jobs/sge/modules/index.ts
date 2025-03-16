@@ -1,5 +1,5 @@
 import {ActionTimeline} from './ActionTimeline'
-import ABCTable from './AlwaysBeCastingTable'
+import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {CooldownDowntime} from './CooldownDowntime'
 import {Defensives} from './Defensives'
 import {DoTs} from './DoTs'
@@ -9,11 +9,10 @@ import {Kardia} from './Kardia'
 import {Overheal} from './Overheal'
 import {Swiftcast} from './Swiftcast'
 import {Tincture} from './Tincture'
-import {Weaving} from './Weaving'
 import {Zoe} from './Zoe'
 
 export const modules = [
-	ABCTable,
+	AlwaysBeCasting,
 	ActionTimeline,
 	CooldownDowntime,
 	Defensives,
@@ -24,6 +23,5 @@ export const modules = [
 	Overheal,
 	Swiftcast,
 	Tincture,
-	Weaving,
 	Zoe,
 ]

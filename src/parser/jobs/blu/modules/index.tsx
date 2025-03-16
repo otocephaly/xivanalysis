@@ -19,7 +19,6 @@ import {RevengeBlast} from './RevengeBlast'
 import {StatusTimeline} from './StatusTimeline'
 import {Swiftcast} from './Swiftcast'
 import {TripleTrident} from './TripleTrident'
-import {BLUWeaving} from './Weaving'
 import {WingedReprobation} from './WingedReprobation'
 
 export const modules = [
@@ -27,7 +26,6 @@ export const modules = [
 	Defensives,
 	ActionTimeline,
 	BLUDeath,
-	BLUWeaving,
 	AlwaysBeCasting,
 	DoTs,
 	Tincture,

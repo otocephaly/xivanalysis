@@ -1,8 +1,7 @@
 import {About} from './About'
 import {ActionTimeline} from './ActionTimeline'
 import {Actors} from './Actors'
-import {AlwaysBeCasting} from './AlwaysBeCasting'
-import {ABCTable} from './AlwaysBeCastingTable'
+import {AlwaysBeCasting} from './AlwaysBeCasting/AlwaysBeCasting'
 import {BrokenLog} from './BrokenLog'
 import {CastTime} from './CastTime'
 import {ChangeLog} from './ChangeLog'
@@ -36,7 +35,6 @@ export const modules = [
 	ActionTimeline,
 	Actors,
 	AlwaysBeCasting,
-	ABCTable,
 	BrokenLog,
 	ChangeLog,
 	CastTime,

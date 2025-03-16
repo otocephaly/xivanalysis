@@ -1,13 +1,10 @@
 import {MessageDescriptor} from '@lingui/core'
 import {t} from '@lingui/macro'
 import {Trans} from '@lingui/react'
-import {ActionLink} from 'components/ui/DbLink'
 import {ACTIONS} from 'data/ACTIONS'
 import {Event, Events} from 'event'
 import {Analyser} from 'parser/core/Analyser'
 import {Suggestions, SEVERITY, TieredSuggestion} from 'parser/core/modules/Suggestions'
-import {Timeline} from 'parser/core/modules/Timeline'
-import {Button, Table} from 'semantic-ui-react'
 import {filter} from '../filter'
 import {dependency} from '../Injectable'
 import {CastTime} from './CastTime'
@@ -17,9 +14,6 @@ interface SeverityTiers {
 	[key: number]: number
 }
 
-// used for timeline viewing by giving you a nice 30s window
-const TIMELINE_UPPER_MOD: number = 30000
-
 export class Interrupts extends Analyser {
 	static override handle: string = 'interrupts'
 	static override title: MessageDescriptor = t('core.interrupts.title')`Interrupted Casts`
@@ -28,7 +22,6 @@ export class Interrupts extends Analyser {
 	@dependency private castTime!: CastTime
 	@dependency protected data!: Data
 	@dependency private suggestions!: Suggestions
-	@dependency private timeline!: Timeline
 
 	private currentCast?: Events['prepare']
 	private droppedCasts: Array<Events['interrupt']> = []
@@ -115,47 +108,5 @@ export class Interrupts extends Analyser {
 			content: this.suggestionContent,
 			why: this.suggestionWhy(this.droppedCasts, this.missedTimeMS),
 		}))
-	}
-
-	override output() {
-		if (this.droppedCasts.length === 0) {
-			return this.noInterruptsOutput()
-		}
-
-		return <Table compact unstackable celled collapsing>
-			<Table.Header>
-				<Table.Row>
-					<Table.HeaderCell collapsing>
-						<strong><Trans id="core.interrupts.table.time">Time</Trans></strong>
-					</Table.HeaderCell>
-					<Table.HeaderCell>
-						<strong><Trans id="core.interrupts.table.cast">Cast</Trans></strong>
-					</Table.HeaderCell>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{
-					this.droppedCasts.map((cast) => {
-						const action = this.data.getAction(cast.action)
-						return <Table.Row key={cast.timestamp}>
-							<Table.Cell textAlign="center">
-								<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(cast.timestamp)}</span>
-								<Button
-									circular
-									compact
-									size="mini"
-									icon="time"
-									onClick={() => this.timeline.show(cast.timestamp - this.parser.pull.timestamp, cast.timestamp - this.parser.pull.timestamp + TIMELINE_UPPER_MOD)}
-								/>
-							</Table.Cell>
-							<Table.Cell>
-								<ActionLink {...action} />
-							</Table.Cell>
-						</Table.Row>
-					})
-				}
-			</Table.Body>
-		</Table>
-
 	}
 }

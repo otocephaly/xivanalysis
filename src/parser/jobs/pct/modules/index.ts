@@ -1,6 +1,6 @@
 import {Interrupts} from 'parser/core/modules/Interrupts'
 import {ActionTimeline} from './ActionTimeline'
-import ABCTable from './AlwaysBeCastingTable'
+import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {AoEUsages} from './AoEUsages'
 import {CooldownDowntime} from './CooldownDowntime'
 import {Defensives} from './Defensives'
@@ -10,10 +10,9 @@ import {Procs} from './Procs'
 import {StarryMuse} from './StarryMuse'
 import {Swiftcast} from './Swiftcast'
 import {Tincture} from './Tincture'
-import {Weaving} from './Weaving'
 
 export const modules = [
-	ABCTable,
+	AlwaysBeCasting,
 	ActionTimeline,
 	AoEUsages,
 	CooldownDowntime,
@@ -25,5 +24,4 @@ export const modules = [
 	StarryMuse,
 	Swiftcast,
 	Tincture,
-	Weaving,
 ]

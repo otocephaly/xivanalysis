@@ -1,6 +1,7 @@
 import {Interrupts} from 'parser/core/modules/Interrupts'
 import {Tincture} from 'parser/core/modules/Tincture'
 import {ActionTimeline} from './ActionTimeline'
+import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {AoEUsages} from './AoEUsages'
 import {CastTime} from './CastTime'
 import {Defensives} from './Defensives'
@@ -12,12 +13,11 @@ import {Procs} from './Procs'
 import {RotationWatchdog} from './RotationWatchdog'
 import {Thunder} from './Thunder'
 import {Triplecast} from './Triplecast'
-import {Weaving} from './Weaving'
 
 export const modules = [
 	ActionTimeline,
 	AoEUsages,
-	Weaving,
+	AlwaysBeCasting,
 	CastTime,
 	Defensives,
 	Gauge,

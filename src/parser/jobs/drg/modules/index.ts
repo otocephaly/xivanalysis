@@ -10,7 +10,6 @@ import {OGCDDowntime} from './OGCDDowntime'
 import {Positionals} from './Positionals'
 import {Procs} from './Procs'
 import {Tincture} from './Tincture'
-import {Weaving} from './Weaving'
 
 export const modules = [
 	ActionTimeline,
@@ -25,5 +24,4 @@ export const modules = [
 	Positionals,
 	Procs,
 	Tincture,
-	Weaving,
 ]

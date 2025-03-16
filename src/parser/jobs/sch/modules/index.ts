@@ -1,4 +1,5 @@
 import {Aetherflow} from './Aetherflow'
+import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {CooldownDowntime} from './CooldownDowntime'
 import {Defensives} from './Defensives'
 import {DoTs} from './DoTs'
@@ -9,10 +10,10 @@ import {Pets} from './Pets'
 import {Procs} from './Procs'
 import {Swiftcast} from './Swiftcast'
 import {Tincture} from './Tincture'
-import {Weaving} from './Weaving'
 
 export const modules = [
 	Aetherflow,
+	AlwaysBeCasting,
 	CooldownDowntime,
 	Defensives,
 	DoTs,
@@ -23,5 +24,4 @@ export const modules = [
 	Pets,
 	Swiftcast,
 	Tincture,
-	Weaving,
 ]

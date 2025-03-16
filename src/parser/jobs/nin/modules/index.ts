@@ -1,4 +1,5 @@
 import {ActionTimeline} from './ActionTimeline'
+import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {Combos} from './Combos'
 import {Defensives} from './Defensives'
 import {IncreaseAttackSpeed} from './IncreaseAttackSpeed'
@@ -12,10 +13,10 @@ import {OGCDDowntime} from './OGCDDowntime'
 import {Positionals} from './Positionals'
 import {Procs} from './Procs'
 import {Raiju} from './Raiju'
-import {Weaving} from './Weaving'
 
 export const modules = [
 	ActionTimeline,
+	AlwaysBeCasting,
 	Combos,
 	Defensives,
 	IncreaseAttackSpeed,
@@ -29,5 +30,4 @@ export const modules = [
 	Procs,
 	OGCDDowntime,
 	Raiju,
-	Weaving,
 ]

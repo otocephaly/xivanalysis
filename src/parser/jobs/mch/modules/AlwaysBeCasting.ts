@@ -1,8 +1,7 @@
-import {Action} from 'data/ACTIONS'
 import {Event, Events} from 'event'
 import {EventHook} from 'parser/core/Dispatcher'
 import {filter, noneOf} from 'parser/core/filter'
-import {AlwaysBeCasting as CoreAlwaysBeCasting} from 'parser/core/modules/AlwaysBeCasting'
+import {AlwaysBeCasting as CoreAlwaysBeCasting} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
 
 interface FlameWindow {
 	start: number
@@ -61,27 +60,13 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 
 	}
 
-	override considerCast(action: Action, castStart: number): boolean {
-		if (action === this.data.actions.FLAMETHROWER) {
-			this.debug(`Flamethrower began channeling at ${this.parser.formatEpochTimestamp(castStart)}`)
-			return false
+	override checkAndSave(endTime: number, event?: Events['action']) {
+		const tracker = this.noCastWindows
+		if (tracker.current !== undefined && event !== undefined && event.type === 'action' && event.action === this.data.actions.FLAMETHROWER.id) {
+			this.debug(`Flamethrower ignored this window between ${this.parser.formatEpochTimestamp(tracker.current?.start)} and ${this.parser.formatEpochTimestamp(endTime)}.`)
+			tracker.current.ignoreWindowIncludingUptime = true
 		}
 
-		return super.considerCast(action, castStart)
-	}
-
-	override getUptimePercent(): number {
-		const fightDuration = this.parser.currentDuration - this.downtime.getDowntime()
-		const flameDuration = this.flameHistory.reduce((acc, flame) => {
-			const downtime = this.downtime.getDowntime(
-				flame.start,
-				flame.end,
-			)
-			const flamethrowerDurationOrGCD = Math.max(flame.end - flame.start, this.globalCooldown.getDuration())
-			return acc + flamethrowerDurationOrGCD - downtime
-		}, 0)
-		const uptime = (this.gcdUptime + flameDuration) / (fightDuration) * 100
-
-		return uptime
+		super.checkAndSave(endTime, event)
 	}
 }
