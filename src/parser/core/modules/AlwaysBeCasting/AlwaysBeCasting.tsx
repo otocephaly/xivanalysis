@@ -3,6 +3,7 @@ import {Plural, Trans} from '@lingui/react'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {NormalisedMessage} from 'components/ui/NormalisedMessage'
 import {Rotation} from 'components/ui/Rotation'
+import styles from 'components/ui/Rotation.module.css'
 import {Action} from 'data/ACTIONS'
 import {iconUrl} from 'data/icon'
 import {Attribute, Event, Events} from 'event'
@@ -22,22 +23,24 @@ import {DISPLAY_ORDER} from '../DISPLAY_ORDER'
 import {ABCTableExport} from './Component'
 import {Severity, SEVERITY, SeverityTiers, Suggestions, TieredSuggestion} from '../Suggestions'
 
-//value to be added to the gcd to avoid false positives. 100ms for caster tax, 50ms for gcd jitter.
+// value to be added to the gcd to avoid false positives. 100ms for caster tax, 50ms for gcd jitter.
 const GCD_JITTER_OFFSET: number = 50
 const GCD_CASTER_TAX_OFFSET: number = 100
 const DEFAULT_ACTION_ANIMATION_LOCK: number = 750
-export const OGCD_OFFSET: number = 800 //used to either assign blame to standing around or weaving
-export const REACTION_TIME: number = 250 //used to verify whether the first action was reasonable to wait on. i.e. did they start when the fight started? was it pulled early? how much did they wait from when the boss was available again
+export const OGCD_OFFSET: number = 800 // used to either assign blame to standing around or weaving
+export const REACTION_TIME: number = 250 // used to verify whether the first action was reasonable to wait on. i.e. did they start when the fight started? was it pulled early? how much did they wait from when the boss was available again
 
-//rule thresholds
+// rule thresholds
 const UPTIME_TARGET: Severity = 98
 const WEAVING_SEVERITY: SeverityTiers = {
 	1: SEVERITY.MEDIUM,
 	5: SEVERITY.MAJOR,
 }
 
-const ICON_WEAVING_ACTION = 1751
+// icons
+const ICON_WEAVING_ACTION: number = 1751
 
+// constant notes
 const ABC_TABLE_HEADERS = {
 	TIMESTAMP: <><Trans id="core.abc.timestamp-header">Timestamp</Trans><br/>
 		(<Trans id="core.abc.duration-header">Time between executed GCDs</Trans><br/>
@@ -57,18 +60,21 @@ export const ABC_TABLE_NOTES = {
 	DEATH_NOTE: <><Trans id="core.abc.notes-death">Deaths are included here to provide additional context for the fight. Please note that this time is not included in the GCD uptime in the above ABC checklist.</Trans></>,
 }
 
+//interfaces
 export interface ABCWindow {
-	start: number,
-	startAction?: Events['action'], //start action left undefined to allow for case where someone waited too long to start the fight after it had been initiated
-	stop?: number,
-	stopAction?: Events['action'],
-	gcdTime: number, //time it takes until the next action is available. In this module, if cast time > GCD, cast time is GCD. there's probably a better name but alas
-	availableOGCDTime: number, //this is used to determine whether the action allows for more OGCDs, e.g. cast vs action
-	doNothingForegivness: number, //allowances based on time dead, interruptions, oGCDs
+	leadingGCDTime: number,
+	leadingGCDEvent?: Events['action'], // start action left undefined to allow for case where someone waited too long to start the fight after it had been initiated or downtime
+	leadingGCDIcon?: ReactNode, // used if no start action noted
+	trailingGCDTime?: number,
+	trailingGCDEvent?: Events['action'],
+	trailingGCDIcon?: ReactNode, // used if no ending action noted
+	expectedGCDDuration: number, // time it takes until the next action is available. In this module, if cast time > GCD, cast time is GCD
+	availableOGCDTime: number, // this is used to determine whether the action allows for more OGCDs, e.g. cast vs action
+	doNothingForegivness: number, // allowances based on time dead, interruptions, oGCDs
 	isDeath: boolean,
 	interruptedActions?: Action[],
-	actions: Array<Events['action']>, //used to track oGCDs for weaves
-	ignoreWindowIncludingUptime: boolean //used to allow for overriding actions if not considered during uptime
+	actions: Array<Events['action']>, // used to track oGCDs for weaves
+	ignoreWindowIncludingUptime: boolean // used to allow for overriding actions if not considered during uptime
 }
 
 export interface AnimationLock {
@@ -90,7 +96,7 @@ export class AlwaysBeCasting extends Analyser {
 	@dependency protected checklist!: Checklist
 	@dependency protected suggestions!: Suggestions
 
-	//debug options
+	// debug options
 	private debugShowOnlyViolations: boolean = false
 	private checkInstance: number = 0
 
@@ -98,30 +104,36 @@ export class AlwaysBeCasting extends Analyser {
 	private hardCastStartTime: number | undefined = undefined
 	private aliveHook: EventHook<Events['statusRemove']> | undefined = undefined
 	private prepareTime: number = this.parser.pull.timestamp //used for interrupts
-	//this is used to provide additional information on how long someone can actually access oGCDs for weaving
+	// this is used to provide additional information on how long someone can actually access oGCDs for weaving
 	protected actionsWithExtraAnimationLock: AnimationLock[] | undefined = undefined
 
-	//some jobs might have exceptions where actions have an extra animation lock
+	// some jobs might have exceptions where actions have an extra animation lock
 	protected ignoredActionIds: number[] = []
 
-	//ABC totals tracking
+	// misc icons
+	private deathIcon: ReactNode = <DataLink status="WEAKNESS" showName={false} iconSize={styles.gcdSize} />
+	private rezIcon: ReactNode = <DataLink status="TRANSCENDENT" showName={false} iconSize={styles.gcdSize}/>
+	private downtimeIcon: ReactNode = <DataLink status="TEMPORAL_DISPLACEMENT_INTERMISSION" showName={false} iconSize={styles.gcdSize} showTooltip={false}/>
+
+	// ABC totals tracking
 	private currentExcludedTime: number | undefined = undefined
 	private totalExcludedTime: number = 0
 	private timeSpentNotCasting: number = 0
+	private firstCastHappened: boolean = false
 
-	//checklist and suggestion items
+	// checklist and suggestion items
 	protected uptimeSeverity: Severity = UPTIME_TARGET
 	protected weavingSeverity: SeverityTiers = WEAVING_SEVERITY
 	protected weavingIcon: string = iconUrl(ICON_WEAVING_ACTION)
 
-	//to allow for easy link within the suggestion
+	// to allow for easy link within the suggestion
 	protected moduleLink = (
 		<a style={{cursor: 'pointer'}} onClick={() => this.parser.scrollTo(AlwaysBeCasting.handle)}>
 			<NormalisedMessage message={AlwaysBeCasting.title}/>
 		</a>
 	)
 
-	//suggestion content
+	// suggestion content
 	protected checkModule: ReactNode = <Trans id="core.abc.suggestion.check-module-link">
 		Check the {this.moduleLink} module below for more detailed analysis.
 	</Trans>
@@ -133,6 +145,12 @@ export class AlwaysBeCasting extends Analyser {
 	protected weavingSuggestionContent: ReactNode = <><Trans id="core.abc.suggestion.weaving.content">
 		Avoid weaving more actions than you have time for in a single GCD window. Doing so will delay your next GCD, reducing possible uptime.
 	</Trans><br/>{this.checkModule}</>
+
+	// footer
+	protected footer: ReactNode = <><Trans id="core.abc.notes-footer">
+		The icon ({this.downtimeIcon}) has been added to actions to show when downtime has started or ended.
+		A reaction time of {this.parser.formatDuration(REACTION_TIME + OGCD_OFFSET)} has been added after downtime, start of fight, or when <DataLink status="TRANSCENDENT" /> drops to track lost uptime when taking to long to get rolling again.
+	</Trans></>
 
 	override initialise() {
 		const playerFilter = filter<Event>().source(this.parser.actor.id)
@@ -146,27 +164,37 @@ export class AlwaysBeCasting extends Analyser {
 		this.addEventHook('complete', this.onComplete)
 	}
 
+	/**
+	 * used to determine whether the preparation event happened before the cast for ease of tracking start of GCD
+	 * @param event preparation event that could determine whether it happened before the actual cast
+	 */
 	private onBegin(event: Events['prepare']) {
-		//don't want oGCDs resetting the window
+		// don't want oGCDs resetting the window
 		const action: Action | undefined = this.data.getAction(event.action)
 		const actionIsOGCD: boolean = !this.data.getAction(event.action)?.onGcd
 		// Ignore actions we were told to ignore and oGCDs and not actions
 		if (action === undefined) { return }
 		if (actionIsOGCD) { return }
 		if (this.ignoredActionIds.includes(action.id)) { return }
-		//use this timestamp for interrupted actions
+		// use this timestamp for interrupted actions
 		this.prepareTime = event.timestamp
-		//if coming from a hard cast, use this timestamp instead
+		// if coming from a hard cast, use this timestamp instead
 		this.hardCastStartTime = event.timestamp
 	}
 
+	/**
+	 * onCast will save the window if a GCD, otherwise add oGCD to the actions of the window
+	 * @param event GCD or oGCD action that will be checked against and saved
+	 */
 	protected onCast(event: Events['action']) {
 		const action: Action | undefined = this.data.getAction(event.action)
+
+		// if not an action or autoattack or if specifically ignored, stop
 		if (action === undefined) { return }
 		if (action.autoAttack) { return }
 		if (this.ignoredActionIds.includes(action.id)) { return }
 
-		//if an oGCD, just add it to our list of actions
+		// if an oGCD, just add it to our list of actions
 		const actionIsOGCD: boolean = !action.onGcd
 		if (actionIsOGCD && this.noCastWindows.current !== undefined) {
 			this.noCastWindows.current.actions.push(event)
@@ -174,31 +202,32 @@ export class AlwaysBeCasting extends Analyser {
 			return
 		}
 
+		// caster tax is considered if the cast is considered a spell
+		// action.castTime !== undefined is always true since for some reason it comes as 0. so checking for attribute is preffered
 		const casterTax: number = action.speedAttribute !== undefined && action.speedAttribute === Attribute.SPELL_SPEED
-			//action.castTime !== undefined is always true since for some reason it comes as 0. so checking for attribute is preffered
 			? GCD_CASTER_TAX_OFFSET : 0
-		//if swift up, no cast time. if not, check cast time if any. consider caster tax and animation lock
-		//again can't trust castTime since it defaults to zero for some reason. used attribute instead
+		// if swift up, no cast time. if not, check cast time if any. consider caster tax and animation lock
+		// again can't trust castTime since it defaults to zero for some reason. used attribute instead
 		const animationLock: number = this.actionsWithExtraAnimationLock?.find(item => item.actionID === event.action)?.timeLocked ?? DEFAULT_ACTION_ANIMATION_LOCK
 		const availableOGCDTime: number = casterTax
 			+ Math.max(animationLock, (this.castTime.castForEvent(event) ?? animationLock))
-		//take recast unless casttime is longer. this will also help with the cases of caster tax when recast = casttime
+		// take recast unless casttime is longer. this will also help with the cases of caster tax when recast = casttime
 		let actionRecast: number = this.castTime.recastForEvent(event) ?? this.gcd.getDuration()
 		actionRecast = (actionRecast > availableOGCDTime) ? actionRecast : availableOGCDTime
 
 		let timeStamp = event.timestamp
-		//coming from a hard cast, adjust for slidecasting
+		// coming from a hard cast, adjust for slidecasting
 		if (this.hardCastStartTime != null) {
 			timeStamp = this.hardCastStartTime
 			this.hardCastStartTime = undefined
 		}
 
-		//don't check the time that you actually spent casting
+		// don't check the time that you actually spent casting
 		if (!this.noCastWindows.current) {
 			this.noCastWindows.current = {
-				start: timeStamp,
-				startAction: event,
-				gcdTime: actionRecast,
+				leadingGCDTime: timeStamp,
+				leadingGCDEvent: event,
+				expectedGCDDuration: actionRecast,
 				availableOGCDTime: availableOGCDTime,
 				doNothingForegivness: 0,
 				actions: [],
@@ -208,15 +237,20 @@ export class AlwaysBeCasting extends Analyser {
 			return
 		}
 
-		//check if there was any downtime between casts
-		this.checkAndSaveDowntime(this.noCastWindows.current.start, event.timestamp)
-		//check if it's been more than a gcd length
+		// check if there was a significant delay since starting the fight
+		if (!this.firstCastHappened) {
+			this.checkAndSaveStartOfFight(event)
+			this.firstCastHappened = true
+		}
+		// check if there was any downtime between casts
+		this.checkAndSaveDowntime(this.noCastWindows.current.leadingGCDTime, event.timestamp)
+		// check if it's been more than a gcd length
 		this.checkAndSave(timeStamp, event)
-		//this cast is our new last cast
+		// this cast is our new last cast
 		this.noCastWindows.current = {
-			start: timeStamp,
-			startAction: event,
-			gcdTime: actionRecast,
+			leadingGCDTime: timeStamp,
+			leadingGCDEvent: event,
+			expectedGCDDuration: actionRecast,
 			availableOGCDTime: availableOGCDTime,
 			doNothingForegivness: 0,
 			actions: [],
@@ -225,6 +259,10 @@ export class AlwaysBeCasting extends Analyser {
 		}
 	}
 
+	/**
+	 * onInterrupt will save the event when there is an interruption noted even if not outside expectedGCDDuration
+	 * @param event interruption event
+	 */
 	private onInterrupt(event: Events['interrupt']) {
 		if (this.noCastWindows.current === undefined) { return }
 		const action: Action | undefined = this.data.getAction(event.action)
@@ -234,11 +272,20 @@ export class AlwaysBeCasting extends Analyser {
 		this.noCastWindows.current.doNothingForegivness += event.timestamp - this.prepareTime
 	}
 
-	//track how long dead and show it for ease of reference
+	/**
+	 * will check and save death event if applicable
+	 * @param event death event
+	 */
+	// track how long dead and show it for ease of reference
 	private onDeath(event: Events['death']) {
 		if (this.currentExcludedTime === undefined) { this.currentExcludedTime = event.timestamp }
 		if (this.noCastWindows.current === undefined) { return }
-		//want to start death event when applicable
+		// check if there was a significant delay since starting the fight and then they died
+		if (!this.firstCastHappened) {
+			this.checkAndSaveStartOfFight(event)
+			this.firstCastHappened = true
+		}
+		// want to start death event when applicable
 		this.checkAndSaveDeath(event)
 
 		this.aliveHook = this.addEventHook(
@@ -250,6 +297,10 @@ export class AlwaysBeCasting extends Analyser {
 		)
 	}
 
+	/**
+	 * onResurrect will close the window when transcendent falls off
+	 * @param event transcendent falling off event
+	 */
 	private onResurrect(event: Events['statusRemove']) {
 		if (this.currentExcludedTime !== undefined) {
 			this.totalExcludedTime += event.timestamp - this.currentExcludedTime
@@ -260,7 +311,7 @@ export class AlwaysBeCasting extends Analyser {
 			this.removeEventHook(this.aliveHook)
 			this.aliveHook = undefined
 		}
-		//want to end death event when no longer applicable
+		// want to end death event when no longer applicable
 		this.checkAndSaveDeath(event)
 	}
 
@@ -270,22 +321,22 @@ export class AlwaysBeCasting extends Analyser {
 	 * @param {Events['action']} event ending action. Optional only in the event of the end of the fight
 	 */
 	protected checkAndSave(endTime: number, event?: Events['action']) {
-		//no window no problem
+		// no window no problem
 		const tracker = this.noCastWindows
 		if (tracker.current === undefined) { return }
 
-		//if window contained ignored actions, include it in excluded time
+		// if window contained ignored actions, include it in excluded time
 		if (tracker.current.ignoreWindowIncludingUptime && event !== undefined && event.type === 'action') {
-			this.totalExcludedTime += endTime - tracker.current.start
+			this.totalExcludedTime += endTime - tracker.current.leadingGCDTime
 		}
 
-		//consider violation if not an interrupted action nor expected GCD time
-		const violation: boolean = (endTime - tracker.current.start > tracker.current.gcdTime + GCD_JITTER_OFFSET
+		// consider violation if not an interrupted action nor expected GCD time
+		const violation: boolean = (endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration + GCD_JITTER_OFFSET
 			|| (tracker.current.interruptedActions !== undefined && tracker.current.interruptedActions?.length !== 0))
 
-		//debug print statements
+		// debug print statements
 		this.checkInstance += 1
-		if (!violation && this.debugShowOnlyViolations) { return } //return if we don't want so show debug statements for non-violations
+		if (!violation && this.debugShowOnlyViolations) { return } // return if we don't want so show debug statements for non-violations
 		if (!violation || this.debugShowOnlyViolations) {
 			this.debug(`Check instance: ${this.checkInstance}`)
 		} else {
@@ -293,34 +344,34 @@ export class AlwaysBeCasting extends Analyser {
 		}
 		if (endTime === this.parser.pull.timestamp + this.parser.pull.duration && tracker.current.isDeath) {
 			// dead and fight ended
-			this.debug(`Player died at ${this.parser.formatEpochTimestamp(tracker.current.start)} and stayed dead until EoF at ${this.parser.formatEpochTimestamp(endTime)} for a total of ${this.parser.formatDuration(endTime - tracker.current.start)}.`)
+			this.debug(`Player died at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} and stayed dead until EoF at ${this.parser.formatEpochTimestamp(endTime)} for a total of ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
 		} else if (tracker.current.isDeath) {
 			// dead and fight didn't end
-			this.debug(`Player died at ${this.parser.formatEpochTimestamp(tracker.current.start)} and ${this.data.statuses.TRANSCENDENT.name} dropped off at ${this.parser.formatEpochTimestamp(endTime)} for a total of ${this.parser.formatDuration(endTime - tracker.current.start)}.`)
-		} else if (event === null && endTime === this.parser.pull.timestamp + this.parser.pull.duration && tracker.current.startAction === undefined) {
+			this.debug(`Player died at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} and ${this.data.statuses.TRANSCENDENT.name} dropped off at ${this.parser.formatEpochTimestamp(endTime)} for a total of ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
+		} else if (event === null && endTime === this.parser.pull.timestamp + this.parser.pull.duration && tracker.current.leadingGCDEvent === undefined) {
 			// end of fight and last instance of anything was start or end of downtime
-			this.debug(`Time between downtime (${this.parser.formatEpochTimestamp(tracker.current.start)}) and EoF (${this.parser.formatEpochTimestamp(endTime)}) was ${this.parser.formatDuration(endTime - tracker.current.start)}.`)
-		} else if (event === null && tracker.current.startAction === undefined) {
+			this.debug(`Time between downtime (${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)}) and EoF (${this.parser.formatEpochTimestamp(endTime)}) was ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
+		} else if (event === null && tracker.current.leadingGCDEvent === undefined) {
 			// both instances was downtime
-			this.debug(`Time between downtimes (${this.parser.formatEpochTimestamp(tracker.current.start)} to ${this.parser.formatEpochTimestamp(endTime)}) was ${this.parser.formatDuration(endTime - tracker.current.start)}.`)
-		} else if (tracker.current.startAction === undefined && event !== undefined) {
+			this.debug(`Time between downtimes (${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} to ${this.parser.formatEpochTimestamp(endTime)}) was ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
+		} else if (tracker.current.leadingGCDEvent === undefined && event !== undefined) {
 			// cast/death following downtime
-			this.debug(`Expected delay following downtime at ${this.parser.formatEpochTimestamp(tracker.current.start)} until ${this.parser.formatEpochTimestamp(endTime)} Est GCD/Recast: ${this.parser.formatDuration(tracker.current.gcdTime)} - Actual Duration: ${this.parser.formatDuration(endTime - tracker.current.start)} OGCDs: ${tracker.current.actions.length} Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
-		} else if (tracker.current.startAction !== undefined) {
+			this.debug(`Expected delay following downtime at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} until ${this.parser.formatEpochTimestamp(endTime)} Est GCD/Recast: ${this.parser.formatDuration(tracker.current.expectedGCDDuration)} - Actual Duration: ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)} OGCDs: ${tracker.current.actions.length} Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
+		} else if (tracker.current.leadingGCDEvent !== undefined) {
 			// assumed successful cast
-			this.debug(`GCD Action: ${this.data.getAction(tracker.current.startAction.action)?.name} - Est GCD/Recast: ${this.parser.formatDuration(tracker.current.gcdTime)} - Started: ${this.parser.formatEpochTimestamp(tracker.current.start)} - Ended: ${this.parser.formatEpochTimestamp(endTime)} - Actual Duration: ${this.parser.formatDuration(endTime - tracker.current.start)} - OGCDs: ${tracker.current.actions.length} - Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
+			this.debug(`GCD Action: ${this.data.getAction(tracker.current.leadingGCDEvent.action)?.name} - Est GCD/Recast: ${this.parser.formatDuration(tracker.current.expectedGCDDuration)} - Started: ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} - Ended: ${this.parser.formatEpochTimestamp(endTime)} - Actual Duration: ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)} - OGCDs: ${tracker.current.actions.length} - Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
 		}
 
-		//return and reset if no violation
+		// return and reset if no violation
 		if (!violation) {
 			tracker.current = undefined
 			return
 		}
 
 		// Close the window
-		tracker.current.stop = endTime
-		if (event !== undefined) { tracker.current.stopAction = event }
-		if (endTime - tracker.current.start > tracker.current.gcdTime) { this.timeSpentNotCasting += endTime - tracker.current.start - tracker.current.gcdTime }
+		tracker.current.trailingGCDTime = endTime
+		if (event !== undefined) { tracker.current.trailingGCDEvent = event }
+		if (endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration) { this.timeSpentNotCasting += endTime - tracker.current.leadingGCDTime - tracker.current.expectedGCDDuration }
 		tracker.history.push(tracker.current)
 		tracker.current = undefined
 	}
@@ -330,14 +381,17 @@ export class AlwaysBeCasting extends Analyser {
 	 * @param event either death or drop off of rez invuln
 	 */
 	private checkAndSaveDeath(event: Events['death'] | Events['statusRemove']) {
-		//check if any downtime between last cast and death. don't want to double count downtime. this statement will also prioritize death during downtime since we assess at ToD
-		if (this.noCastWindows.current !== undefined && !this.noCastWindows.current.isDeath) { this.checkAndSaveDowntime(this.noCastWindows.current.start, event.timestamp) }
-		//check if it's been more than a gcd length since death started
+		const tracker = this.noCastWindows.current
+		// check if any downtime between last cast and death. don't want to double count downtime. this statement will also prioritize death during downtime since we assess at ToD
+		if (tracker !== undefined && !tracker.isDeath) { this.checkAndSaveDowntime(tracker.leadingGCDTime, event.timestamp) }
+		// check if it's been more than a gcd length since death started
+		if (tracker !== undefined) { tracker.trailingGCDIcon = (event.type === 'death' ? this.deathIcon : this.rezIcon) }
 		this.checkAndSave(event.timestamp)
-		//this cast is our new last cast
+		// this cast is our new last cast
 		this.noCastWindows.current = {
-			start: event.timestamp,
-			gcdTime: 0,
+			leadingGCDTime: event.timestamp,
+			leadingGCDIcon: event.type === 'death' ? this.deathIcon : this.rezIcon,
+			expectedGCDDuration: 0,
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
@@ -362,14 +416,17 @@ export class AlwaysBeCasting extends Analyser {
 			endTime,
 		)
 		if (downtimeWindows.length !== 0) {
-			//remove downtime from uptime
+			// remove downtime from uptime
 			this.totalExcludedTime += downtime
-			//want to check and save for each instance of downtime (there shouldn't be multiple, but if someone does nothing for a long time I guess it could happen)
+			// want to check and save for each instance of downtime (there shouldn't be multiple, but if someone does nothing for a long time I guess it could happen)
 			downtimeWindows.forEach(window => {
+				const tracker = this.noCastWindows.current
+				if (tracker !== undefined) { tracker.trailingGCDIcon = this.downtimeIcon }
 				this.checkAndSave(window.start)
 				this.noCastWindows.current = {
-					start: window.end,
-					gcdTime: REACTION_TIME, //default to reaction time for when boss appears
+					leadingGCDTime: window.end,
+					leadingGCDIcon: this.downtimeIcon,
+					expectedGCDDuration: REACTION_TIME + OGCD_OFFSET, // default to reaction time for when boss appears and allow time for a gap closer (1 oGCD)
 					availableOGCDTime: 0,
 					doNothingForegivness: 0,
 					actions: [],
@@ -380,17 +437,33 @@ export class AlwaysBeCasting extends Analyser {
 		}
 	}
 
+	private checkAndSaveStartOfFight(event: Events['action' | 'death']) {
+		if (this.noCastWindows.current !== undefined) { return }
+		if (event.timestamp <= this.parser.pull.timestamp) { return }
+		// synth if first time
+		this.noCastWindows.current = {
+			leadingGCDTime: this.parser.pull.timestamp,
+			leadingGCDIcon: this.downtimeIcon,
+			expectedGCDDuration: REACTION_TIME + OGCD_OFFSET, // give benefit of early pull with reaction time and OGCD for gap close
+			availableOGCDTime: 0,
+			doNothingForegivness: 0,
+			actions: [],
+			isDeath: false,
+			ignoreWindowIncludingUptime: false,
+		}
+	}
+
 	/**
 	 * takes the base assumptions from the window and returns the amount of time the individual was doing nothing
 	 * @param window window in which you suspect there could be someone doing nothing
 	 * @returns amount of time in which someone is doing nothing or null if 0 or less
 	 */
 	private determineDoingNothing(window: ABCWindow): number | null {
-		const windowLength: number = (window.stop ?? window.start) - window.start
-		const maxAllowableTime: number = //earliest time given weaving and actual GCD
-			Math.max(window.doNothingForegivness + window.availableOGCDTime, window.gcdTime) + GCD_JITTER_OFFSET
+		const windowLength: number = (window.trailingGCDTime ?? window.leadingGCDTime) - window.leadingGCDTime
+		const maxAllowableTime: number = // earliest time given weaving and actual GCD
+			Math.max(window.doNothingForegivness + window.availableOGCDTime, window.expectedGCDDuration) + GCD_JITTER_OFFSET
 		if (windowLength > maxAllowableTime && !window.isDeath) {
-			//for display purposes, include GCD jitter and caster tax so it doesn't look like we're penalizing for pennies
+			// for display purposes, include GCD jitter and caster tax so it doesn't look like we're penalizing for pennies
 			return (windowLength - maxAllowableTime + GCD_JITTER_OFFSET)
 		}
 		return null
@@ -400,35 +473,44 @@ export class AlwaysBeCasting extends Analyser {
 	 * Returns true if the window contains too many weaves
 	 */
 	protected determineBadWeave(window: ABCWindow): boolean {
-		//want only whole available oGCDs during window
-		const availableOGCDs: number = Math.max(Math.floor((window.gcdTime - window.availableOGCDTime) / OGCD_OFFSET), 0)
+		// want only whole available oGCDs during window
+		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime) / OGCD_OFFSET), 0)
 		const checkIfBad = window.actions.length > availableOGCDs
 		return checkIfBad
 	}
 
+	/**
+	 * used at the end of the fight to determine the uptime percentage
+	 * the calculation is fight duration less excluded time less time spent not casting as determined by violations noted in checkAndSave
+	 * @returns uptime percentage
+	 */
+	private determineUptimePercentage(): number {
+		let uptimePercent: number = 0
+		if (this.parser.pull.duration !== this.totalExcludedTime) {
+			uptimePercent = (this.parser.pull.duration - this.totalExcludedTime - this.timeSpentNotCasting) / (this.parser.pull.duration - this.totalExcludedTime) * 100
+		}
+
+		return uptimePercent
+	}
+
 	protected onComplete(event: Events['complete']) {
-		//finish up
+		// finish up
 		this.checkAndSave(event.timestamp)
 
-		//if nothing do nothing
+		// if nothing do nothing
 		if (this.checkInstance === 0) { return }
 
-		//if they were dead at the end, don't exclude this
+		// if they were dead at the end, don't exclude this
 		if (this.currentExcludedTime !== undefined) {
 			this.totalExcludedTime += this.parser.pull.duration + this.parser.pull.timestamp - this.currentExcludedTime
 			this.currentExcludedTime = undefined
 		}
 
-		//testing gcduptime
-		let uptimePercent: number | null = null
-		if (this.parser.pull.duration !== this.totalExcludedTime) {
-			uptimePercent = (this.parser.pull.duration - this.totalExcludedTime - this.timeSpentNotCasting) / (this.parser.pull.duration - this.totalExcludedTime) * 100
-		}
+		// testing gcduptime
+		const uptimePercent: number = this.determineUptimePercentage()
 
-		if (uptimePercent == null || uptimePercent === 0) { return }
-
-		//final debug statements
-		//downtime debug
+		// final debug statements
+		// downtime debug
 		if (this.debug) {
 			this.downtime.getDowntimeWindows().forEach(
 				window => {
@@ -438,7 +520,7 @@ export class AlwaysBeCasting extends Analyser {
 		}
 		this.debug(`End of fight time: ${this.parser.formatEpochTimestamp(event.timestamp)} - Total excluded time: ${this.parser.formatDuration(this.totalExcludedTime)} - Time spent not casting: ${this.parser.formatDuration(this.timeSpentNotCasting)} - Uptime percent: ${uptimePercent}.`)
 
-		const footnote =
+		const checklistFootnote =
 			<Trans id="core.abc.additional-info-rule">
 				Factors:
 				<ul>
@@ -459,10 +541,10 @@ export class AlwaysBeCasting extends Analyser {
 				}),
 			],
 			target: this.uptimeSeverity,
-			footnote: footnote,
+			footnote: checklistFootnote,
 		}))
 
-		//weaving suggestion
+		// weaving suggestion
 		const badWeaves: ABCWindow[] = this.noCastWindows.history.filter(window => this.determineBadWeave(window))
 
 		this.suggestions.add(new TieredSuggestion({
@@ -480,10 +562,12 @@ export class AlwaysBeCasting extends Analyser {
 	}
 
 	override output() {
-		//if nothing do nothing
+		// if nothing do nothing
 		if (this.noCastWindows.history.length === 0) { return }
 
-		//weaves
+		/**
+		 * weaves table
+		 */
 		const badWeaves: ABCWindow[] = this.noCastWindows.history.filter(window => this.determineBadWeave(window))
 		const badWeavesBoolean: boolean = badWeaves.length !== 0
 		const weaveTable: JSX.Element | null = !badWeavesBoolean ? null :
@@ -501,37 +585,44 @@ export class AlwaysBeCasting extends Analyser {
 					</Table.Header>
 					<Table.Body>
 						{badWeaves.map(badWeaveWindow => {
-							return <Table.Row key={badWeaveWindow.start}>
+							return <Table.Row key={badWeaveWindow.leadingGCDTime}>
 								<Table.Cell>
 									<Button
 										circular
 										compact
 										size="mini"
 										icon="time"
-										onClick={() => this.timeline.show(badWeaveWindow.start - this.parser.pull.timestamp, (badWeaveWindow.stop ?? badWeaveWindow.start) - this.parser.pull.timestamp)}
+										onClick={() => this.timeline.show(badWeaveWindow.leadingGCDTime - this.parser.pull.timestamp, (badWeaveWindow.trailingGCDTime ?? badWeaveWindow.leadingGCDTime) - this.parser.pull.timestamp)}
 									/><br/>
-									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badWeaveWindow.start)}</span>
-									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badWeaveWindow.stop ?? badWeaveWindow.start)}</span>
+									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badWeaveWindow.leadingGCDTime)}</span>
+									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badWeaveWindow.trailingGCDTime ?? badWeaveWindow.leadingGCDTime)}</span>
 									<br/>
-									({this.parser.formatDuration((badWeaveWindow.stop ?? badWeaveWindow.start) - badWeaveWindow.start)} / {this.parser.formatDuration(badWeaveWindow.gcdTime)})
+									({this.parser.formatDuration((badWeaveWindow.trailingGCDTime ?? badWeaveWindow.leadingGCDTime) - badWeaveWindow.leadingGCDTime)} / {this.parser.formatDuration(badWeaveWindow.expectedGCDDuration)})
 								</Table.Cell>
 								<Table.Cell>
 									{badWeaveWindow.actions.length !== 0 ? badWeaveWindow.actions.length : null}
 								</Table.Cell>
 								<Table.Cell>
+									{<div className={styles.container}>{badWeaveWindow.leadingGCDIcon}</div>}
 									<Rotation events={[
-										...(badWeaveWindow.startAction !== undefined ? [badWeaveWindow.startAction] : []), // don't want to show null action if individual weaves a lot in the beginning without any beginning actions
+										...(badWeaveWindow.leadingGCDEvent !== undefined ? [badWeaveWindow.leadingGCDEvent] : []), // don't want to show null action if individual weaves a lot in the beginning without any beginning actions
 										...badWeaveWindow.actions,
-										...(badWeaveWindow.stopAction !== undefined ? [badWeaveWindow.stopAction] : []), // don't want to show null action if individual weaves a lot close to the end without any ending actions
+										...(badWeaveWindow.trailingGCDEvent !== undefined ? [badWeaveWindow.trailingGCDEvent] : []), // don't want to show null action if individual weaves a lot close to the end without any ending actions
 									]}/>
+									{<div className={styles.container}>{badWeaveWindow.trailingGCDIcon}</div>}
 								</Table.Cell>
 							</Table.Row>
 						})}
 					</Table.Body>
 				</Table>
+				<Message info>
+					{this.footer}
+				</Message>
 			</>
 
-		//interrupts
+		/**
+		 * interrupts table
+		 */
 		const badInterrupts: ABCWindow[] = this.noCastWindows.history.filter(window => window.interruptedActions !== undefined && window.interruptedActions.length !== 0)
 		const badInterruptsBoolean: boolean = badInterrupts.length !== 0
 		const interruptTable: JSX.Element | null = !badInterruptsBoolean ? null :
@@ -549,19 +640,19 @@ export class AlwaysBeCasting extends Analyser {
 					</Table.Header>
 					<Table.Body>
 						{badInterrupts.map(badInterruptWindow => {
-							return <Table.Row key={badInterruptWindow.start}>
+							return <Table.Row key={badInterruptWindow.leadingGCDTime}>
 								<Table.Cell>
 									<Button
 										circular
 										compact
 										size="mini"
 										icon="time"
-										onClick={() => this.timeline.show(badInterruptWindow.start - this.parser.pull.timestamp, (badInterruptWindow.stop ?? badInterruptWindow.start) - this.parser.pull.timestamp)}
+										onClick={() => this.timeline.show(badInterruptWindow.leadingGCDTime - this.parser.pull.timestamp, (badInterruptWindow.trailingGCDTime ?? badInterruptWindow.leadingGCDTime) - this.parser.pull.timestamp)}
 									/><br/>
-									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badInterruptWindow.start)}</span>
-									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badInterruptWindow.stop ?? badInterruptWindow.start)}</span>
+									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badInterruptWindow.leadingGCDTime)}</span>
+									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badInterruptWindow.trailingGCDTime ?? badInterruptWindow.leadingGCDTime)}</span>
 									<br/>
-									({this.parser.formatDuration((badInterruptWindow.stop ?? badInterruptWindow.start) - badInterruptWindow.start)} / {this.parser.formatDuration(badInterruptWindow.gcdTime)})
+									({this.parser.formatDuration((badInterruptWindow.trailingGCDTime ?? badInterruptWindow.leadingGCDTime) - badInterruptWindow.leadingGCDTime)} / {this.parser.formatDuration(badInterruptWindow.expectedGCDDuration)})
 								</Table.Cell>
 								<Table.Cell>
 									{badInterruptWindow.interruptedActions?.map(interruptedAction => {
@@ -569,11 +660,13 @@ export class AlwaysBeCasting extends Analyser {
 									})}
 								</Table.Cell>
 								<Table.Cell>
+									{<div className={styles.container}>{badInterruptWindow.leadingGCDIcon}</div>}
 									<Rotation events={[
-										...(badInterruptWindow.startAction !== undefined ? [badInterruptWindow.startAction] : []), // don't want to show null action if individual weaves a lot in the beginning without any beginning actions
+										...(badInterruptWindow.leadingGCDEvent !== undefined ? [badInterruptWindow.leadingGCDEvent] : []), // don't want to show null action if individual weaves a lot in the beginning without any beginning actions
 										...badInterruptWindow.actions,
-										...(badInterruptWindow.stopAction !== undefined ? [badInterruptWindow.stopAction] : []), // don't want to show null action if individual weaves a lot close to the end without any ending actions
+										...(badInterruptWindow.trailingGCDEvent !== undefined ? [badInterruptWindow.trailingGCDEvent] : []), // don't want to show null action if individual weaves a lot close to the end without any ending actions
 									]}/>
+									{<div className={styles.container}>{badInterruptWindow.trailingGCDIcon}</div>}
 								</Table.Cell>
 							</Table.Row>
 						})}
@@ -581,7 +674,9 @@ export class AlwaysBeCasting extends Analyser {
 				</Table>
 			</>
 
-		//deaths
+		/**
+		 * deaths table
+		 */
 		const badDeaths: ABCWindow[] = this.noCastWindows.history.filter(window => window.isDeath)
 		const badDeathsBoolean: boolean = badDeaths.length !== 0
 		const deathTable: JSX.Element | null = !badDeathsBoolean ? null :
@@ -597,19 +692,19 @@ export class AlwaysBeCasting extends Analyser {
 					</Table.Header>
 					<Table.Body>
 						{badDeaths.map(badDeathsWindow => {
-							return <Table.Row key={badDeathsWindow.start}>
+							return <Table.Row key={badDeathsWindow.leadingGCDTime}>
 								<Table.Cell>
 									<Button
 										circular
 										compact
 										size="mini"
 										icon="time"
-										onClick={() => this.timeline.show(badDeathsWindow.start - this.parser.pull.timestamp, (badDeathsWindow.stop ?? badDeathsWindow.start) - this.parser.pull.timestamp)}
+										onClick={() => this.timeline.show(badDeathsWindow.leadingGCDTime - this.parser.pull.timestamp, (badDeathsWindow.trailingGCDTime ?? badDeathsWindow.leadingGCDTime) - this.parser.pull.timestamp)}
 									/><br/>
-									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badDeathsWindow.start)}</span>
-									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badDeathsWindow.stop ?? badDeathsWindow.start)}</span>
+									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badDeathsWindow.leadingGCDTime)}</span>
+									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(badDeathsWindow.trailingGCDTime ?? badDeathsWindow.leadingGCDTime)}</span>
 									<br/>
-									({this.parser.formatDuration((badDeathsWindow.stop ?? badDeathsWindow.start) - badDeathsWindow.start)})
+									({this.parser.formatDuration((badDeathsWindow.trailingGCDTime ?? badDeathsWindow.leadingGCDTime) - badDeathsWindow.leadingGCDTime)})
 								</Table.Cell>
 							</Table.Row>
 						})}
@@ -617,7 +712,9 @@ export class AlwaysBeCasting extends Analyser {
 				</Table>
 			</>
 
-		//doing nothing
+		/**
+		 * doing nothing table
+		 */
 		const badDoNothing: ABCWindow[] = this.noCastWindows.history.filter(window => this.determineDoingNothing(window) !== null)
 		const badDoNothingBoolean: boolean = badDoNothing.length !== 0
 		const doNothingTable: JSX.Element | null = !badDoNothingBoolean ? null :
@@ -638,37 +735,42 @@ export class AlwaysBeCasting extends Analyser {
 							//take time between GCDs and remove recast time, caster tax (if any) and gcd jitters, forgive anything that needs forgiving (oGCDs, etc)
 							const doingNothingTime = this.determineDoingNothing(doingNothingWindow)
 							const doingNothingTimeFormatted = doingNothingTime !== null ? this.parser.formatDuration(doingNothingTime) : null
-							return <Table.Row key={doingNothingWindow.start}>
+							return <Table.Row key={doingNothingWindow.leadingGCDTime}>
 								<Table.Cell>
 									<Button
 										circular
 										compact
 										size="mini"
 										icon="time"
-										onClick={() => this.timeline.show(doingNothingWindow.start - this.parser.pull.timestamp, (doingNothingWindow.stop ?? doingNothingWindow.start) - this.parser.pull.timestamp)}
+										onClick={() => this.timeline.show(doingNothingWindow.leadingGCDTime - this.parser.pull.timestamp, (doingNothingWindow.trailingGCDTime ?? doingNothingWindow.leadingGCDTime) - this.parser.pull.timestamp)}
 									/><br/>
-									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(doingNothingWindow.start)}</span>
-									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(doingNothingWindow.stop ?? doingNothingWindow.start)}</span>
+									<span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(doingNothingWindow.leadingGCDTime)}</span>
+									- <span style={{marginRight: 5}}>{this.parser.formatEpochTimestamp(doingNothingWindow.trailingGCDTime ?? doingNothingWindow.leadingGCDTime)}</span>
 									<br/>
-									({this.parser.formatDuration((doingNothingWindow.stop ?? doingNothingWindow.start) - doingNothingWindow.start)} / {this.parser.formatDuration(doingNothingWindow.gcdTime)})
+									({this.parser.formatDuration((doingNothingWindow.trailingGCDTime ?? doingNothingWindow.leadingGCDTime) - doingNothingWindow.leadingGCDTime)} / {this.parser.formatDuration(doingNothingWindow.expectedGCDDuration)})
 								</Table.Cell>
 								<Table.Cell>
 									{doingNothingTimeFormatted}
 								</Table.Cell>
 								<Table.Cell>
+									{<div className={styles.container}>{doingNothingWindow.leadingGCDIcon}</div>}
 									<Rotation events={[
-										...(doingNothingWindow.startAction !== undefined ? [doingNothingWindow.startAction] : []), // don't want to show null action if individual weaves a lot in the beginning without any beginning actions
+										...(doingNothingWindow.leadingGCDEvent !== undefined ? [doingNothingWindow.leadingGCDEvent] : []), // don't want to show null action if individual weaves a lot in the beginning without any beginning actions
 										...doingNothingWindow.actions,
-										...(doingNothingWindow.stopAction !== undefined ? [doingNothingWindow.stopAction] : []), // don't want to show null action if individual weaves a lot close to the end without any ending actions
+										...(doingNothingWindow.trailingGCDEvent !== undefined ? [doingNothingWindow.trailingGCDEvent] : []), // don't want to show null action if individual weaves a lot close to the end without any ending actions
 									]}/>
+									{<div className={styles.container}>{doingNothingWindow.trailingGCDIcon}</div>}
 								</Table.Cell>
 							</Table.Row>
 						})}
 					</Table.Body>
 				</Table>
+				<Message info>
+					{this.footer}
+				</Message>
 			</>
 
-		//return for rendering
+		// return for rendering
 		const ABCTablePlaceHolder = {
 			weaves: weaveTable,
 			interrupts: interruptTable,

@@ -123,8 +123,8 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		//consider starting of new window in case they stop doing things right after (allow for reaction time)
 		this.checkAndSave(event.timestamp)
 		this.noCastWindows.current = {
-			start: event.timestamp,
-			gcdTime: REACTION_TIME,
+			leadingGCDTime: event.timestamp,
+			expectedGCDDuration: REACTION_TIME,
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
@@ -141,7 +141,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		//for weaving purposes, surpanakha is fine to count and we will include this in gcd time for ease of tracking
 		if (tracker !== undefined && event.action === this.data.actions.SURPANAKHA.id) {
 			this.surpanakhas++
-			tracker.gcdTime += SURPANAKHA_ANIMATION_LOCK_MS
+			tracker.expectedGCDDuration += SURPANAKHA_ANIMATION_LOCK_MS
 		}
 	}
 
@@ -184,7 +184,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		this.channelHistory.closeCurrent(event.timestamp)
 		const tracker = this.noCastWindows.current
 		if (tracker !== undefined && !tracker.ignoreWindowIncludingUptime) {
-			tracker.gcdTime = event.timestamp - tracker.start
+			tracker.expectedGCDDuration = event.timestamp - tracker.leadingGCDTime
 		}
 	}
 
@@ -192,14 +192,14 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		//if there is a channelling happening, we don't want to double count it
 		const tracker = this.noCastWindows.current
 		if (tracker !== undefined && this.channelHistory.getCurrent() !== undefined) {
-			tracker.gcdTime = event.timestamp - tracker.start
+			tracker.expectedGCDDuration = event.timestamp - tracker.leadingGCDTime
 		}
 		//close window once status applied
 		this.checkAndSave(event.timestamp)
 		//create a window for tracking and debugging purposes
 		this.noCastWindows.current = {
-			start: event.timestamp,
-			gcdTime: REACTION_TIME, //default to reaction time for when boss appears
+			leadingGCDTime: event.timestamp,
+			expectedGCDDuration: REACTION_TIME, //default to reaction time for when boss appears
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
@@ -211,14 +211,14 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 	private waneOff(event: Events['statusRemove']) {
 		const tracker = this.noCastWindows.current
 		if (tracker !== undefined) {
-			this.debug(`${this.data.getStatus(event.status)?.name} was active from ${this.parser.formatEpochTimestamp(tracker.start)} to ${this.parser.formatEpochTimestamp(event.timestamp)}.`)
+			this.debug(`${this.data.getStatus(event.status)?.name} was active from ${this.parser.formatEpochTimestamp(tracker.leadingGCDTime)} to ${this.parser.formatEpochTimestamp(event.timestamp)}.`)
 		}
 		//start new window when status is back
 		this.checkAndSave(event.timestamp)
 		//create a window for tracking and debugging purposes
 		this.noCastWindows.current = {
-			start: event.timestamp,
-			gcdTime: REACTION_TIME, //default to reaction time for when boss appears
+			leadingGCDTime: event.timestamp,
+			expectedGCDDuration: REACTION_TIME, //default to reaction time for when boss appears
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
@@ -243,16 +243,16 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 	}
 
 	override determineBadWeave(window: ABCWindow): boolean {
-		const windowEndTime: number = window?.stop ?? window.start
+		const windowEndTime: number = window?.trailingGCDTime ?? window.leadingGCDTime
 
 		//only want the max weaves for super under moonflute. Note: super under normal circumstances is already considered above.
 		const windowInMoonfluteWithSurp: boolean = this.moonfluteWindows.filter(mfWindow => (
-			mfWindow.startTime <= window.start && mfWindow.endTime >= window.start)
+			mfWindow.startTime <= window.leadingGCDTime && mfWindow.endTime >= window.leadingGCDTime)
 			|| (mfWindow.startTime <= windowEndTime && (mfWindow.endTime >= windowEndTime)
 			)).length !== 0
 			&& window.actions.filter(ogcdActions => ogcdActions.action === this.data.actions.SURPANAKHA.id).length !== 0
 		//want only whole available oGCDs during window
-		const availableOGCDs: number = Math.max(Math.floor((window.gcdTime - window.availableOGCDTime) / OGCD_OFFSET), 0)
+		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime) / OGCD_OFFSET), 0)
 		let checkIfBad: boolean = false
 		if (windowInMoonfluteWithSurp) {
 			checkIfBad = window.actions.length > Math.max(MAX_ALLOWED_MULTIWEAVE_DURING_MOON_FLUTE, availableOGCDs)

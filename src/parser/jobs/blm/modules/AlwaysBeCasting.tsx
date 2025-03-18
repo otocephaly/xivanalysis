@@ -33,10 +33,10 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		//allowed to clip only if it hits one of these conditions. assumption is that the full OGCD amount is allocated to the clip
 		const condition = this.ogcdIds.includes(event.action)
 			|| (this.openerIds.includes(event.action) && (event.timestamp - this.parser.pull.timestamp) < OPENER_TIME_THRESHOLD)
-			|| (tracker?.startAction !== undefined && this.iceSpellIds.includes(tracker.startAction.action) && gaugeState.astralFire === ASTRAL_UMBRAL_MAX_STACKS)
-			|| (tracker?.startAction !== undefined && this.fireSpellIds.includes(tracker.startAction.action) && gaugeState.umbralIce === ASTRAL_UMBRAL_MAX_STACKS)
+			|| (tracker?.leadingGCDEvent !== undefined && this.iceSpellIds.includes(tracker.leadingGCDEvent.action) && gaugeState.astralFire === ASTRAL_UMBRAL_MAX_STACKS)
+			|| (tracker?.leadingGCDEvent !== undefined && this.fireSpellIds.includes(tracker.leadingGCDEvent.action) && gaugeState.umbralIce === ASTRAL_UMBRAL_MAX_STACKS)
 		if (tracker !== undefined && condition) {
-			tracker.gcdTime += OGCD_OFFSET
+			tracker.expectedGCDDuration += OGCD_OFFSET
 		}
 
 		super.onCast(event)

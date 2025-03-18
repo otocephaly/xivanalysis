@@ -14,7 +14,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 
 	protected override determineBadWeave(window: ABCWindow) {
 		let checkIfBadMNK = super.determineBadWeave(window)
-		if (window.startAction !== undefined && window.startAction.action === this.data.actions.SIX_SIDED_STAR.id) {
+		if (window.leadingGCDEvent !== undefined && window.leadingGCDEvent.action === this.data.actions.SIX_SIDED_STAR.id) {
 			checkIfBadMNK = window.actions.length > SSS_MAX_WEAVES
 		}
 		return checkIfBadMNK

@@ -275,6 +275,7 @@
   "core.abc.expected-header": "",
   "core.abc.interrupted-header": "",
   "core.abc.notes-death": "",
+  "core.abc.notes-footer": "",
   "core.abc.notes-interruptions": "",
   "core.abc.notes-nothing": "",
   "core.abc.notes-weaves": "",

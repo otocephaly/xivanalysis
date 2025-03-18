@@ -1,5 +1,4 @@
 import {ActionTimeline} from './ActionTimeline'
-import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {ArmysMuse} from './BuffWindows/ArmysMuse'
 import {BattleVoice} from './BuffWindows/BattleVoice'
 import {BurstWindow} from './BuffWindows/BurstWindow'
@@ -17,7 +16,6 @@ import {SoulVoice} from './SoulVoice'
 
 export const modules = [
 	ActionTimeline,
-	AlwaysBeCasting,
 	Repertoire,
 	SoulVoice,
 	Coda,

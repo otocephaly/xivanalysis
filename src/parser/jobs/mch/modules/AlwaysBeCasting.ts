@@ -63,7 +63,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 	override checkAndSave(endTime: number, event?: Events['action']) {
 		const tracker = this.noCastWindows
 		if (tracker.current !== undefined && event !== undefined && event.type === 'action' && event.action === this.data.actions.FLAMETHROWER.id) {
-			this.debug(`Flamethrower ignored this window between ${this.parser.formatEpochTimestamp(tracker.current?.start)} and ${this.parser.formatEpochTimestamp(endTime)}.`)
+			this.debug(`Flamethrower ignored this window between ${this.parser.formatEpochTimestamp(tracker.current?.leadingGCDTime)} and ${this.parser.formatEpochTimestamp(endTime)}.`)
 			tracker.current.ignoreWindowIncludingUptime = true
 		}
 
