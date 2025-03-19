@@ -1,4 +1,5 @@
 //import {DataLink} from 'components/ui/DbLink'
+import {DataLink} from 'components/ui/DbLink'
 import {CONTRIBUTORS} from 'data/CONTRIBUTORS'
 import {ChangelogEntry} from './Meta'
 
@@ -8,6 +9,20 @@ export const changelog: ChangelogEntry[] = [
 	// 	Changes: () => <>The changes you made</>,
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
+	{
+		date: new Date('2025-03-18'),
+		Changes: () => <><strong>Updated uptime, weaving, interrupts, and added deaths and other GCD issues into one module and updated uptime calculations bringing the following benefits.</strong>
+			<ul>
+				<li> Uptime is now calculated by removing downtime (including deaths) from the fight duration and total active time. </li>
+				<li> Active time is calculated with the above in mind removing time deemed not casting. </li>
+				<li> Weaving is now calculated based on OGCD duration assumption except when animation locks make it longer rather than assumed number of weaves. </li>
+				<li> Deaths are shown in a tabular format for transparency purposes. </li>
+				<li> Downtime, death, and <DataLink status="TRANSCENDENT"/> is shown on actions to paint a clearer picture of what happened to cause uptime to be lost. </li>
+				<li> These are combined into one table with buttons for ease of navigation and to reduce the amount of modules displayed on the screen at one time. </li>
+			</ul>
+		</>,
+		contributors: [CONTRIBUTORS.OTOCEPHALY],
+	},
 	{
 		date: new Date('2025-02-12'),
 		Changes: () => <>Fixed an issue that caused AOE attacks to incorrectly report broken combos if they cleaved an invulnerable target.</>,
