@@ -330,9 +330,16 @@ export class AlwaysBeCasting extends Analyser {
 			this.totalExcludedTime += endTime - tracker.current.leadingGCDTime
 		}
 
+		// consider if downtime is approaching, if so, add another GCD to expected GCD duration since it would take another whole GCD after the last one.
+		// Note: we will be counting after the first GCD not the second for uptime purposes in the event they could have cast another
+		const downtime: number = tracker.current.trailingGCDIcon === this.downtimeIcon ? this.gcd.getDuration() : 0
 		// consider violation if not an interrupted action nor expected GCD time
-		const violation: boolean = (endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration + GCD_JITTER_OFFSET
-			|| (tracker.current.interruptedActions !== undefined && tracker.current.interruptedActions?.length !== 0))
+		const violation: boolean = (
+			// if difference between endTime and leading time is greater than expected plus additional time between downtime
+			endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration + GCD_JITTER_OFFSET + downtime
+			// if this event contains an interrupted action
+			|| (tracker.current.interruptedActions !== undefined && tracker.current.interruptedActions?.length !== 0)
+		)
 
 		// debug print statements
 		this.checkInstance += 1
