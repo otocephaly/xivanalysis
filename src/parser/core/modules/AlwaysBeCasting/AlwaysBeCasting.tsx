@@ -149,7 +149,7 @@ export class AlwaysBeCasting extends Analyser {
 	// footer
 	protected footer: ReactNode = <><Trans id="core.abc.notes-footer">
 		The icon ({this.downtimeIcon}) has been added to actions to show when downtime has started or ended.
-		A reaction time of {this.parser.formatDuration(REACTION_TIME + OGCD_OFFSET)} has been added after downtime, start of fight, or when <DataLink status="TRANSCENDENT" /> drops to track lost uptime when taking to long to get rolling again.
+		A reaction time of {this.parser.formatDuration(REACTION_TIME + OGCD_OFFSET)} has been added after downtime, start of fight, or when <DataLink status="TRANSCENDENT" /> drops to track lost uptime when taking too long to get rolling again.
 	</Trans></>
 
 	override initialise() {

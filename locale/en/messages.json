@@ -275,7 +275,7 @@
   "core.abc.expected-header": "Expected GCD",
   "core.abc.interrupted-header": "Interrupted Actions",
   "core.abc.notes-death": "Deaths are included here to provide additional context for the fight. Please note that this time is not included in the GCD uptime in the above ABC checklist.",
-  "core.abc.notes-footer": "The icon ({0}) has been added to actions to show when downtime has started or ended. A reaction time of {1} has been added after downtime, start of fight, or when <0/> drops to track lost uptime when taking to long to get rolling again.",
+  "core.abc.notes-footer": "The icon ({0}) has been added to actions to show when downtime has started or ended. A reaction time of {1} has been added after downtime, start of fight, or when <0/> drops to track lost uptime when taking too long to get rolling again.",
   "core.abc.notes-interruptions": "Interruptions are included here regardless of ABC impact to provide additional context.",
   "core.abc.notes-nothing": "Other GCD Issues are flagged if they can't be reasonably explained fully by weaving, death, or interrupts.",
   "core.abc.notes-weaves": "Weaves are included here if there are more than the maxmimum that you can weave. Weaves are not included here if you do the less than maximum but end up clipping your next GCD.",
