@@ -19,6 +19,7 @@ export const changelog: ChangelogEntry[] = [
 				<li> Deaths are shown in a tabular format for transparency purposes. </li>
 				<li> Downtime, death, and <DataLink status="TRANSCENDENT"/> is shown on actions to paint a clearer picture of what happened to cause uptime to be lost. </li>
 				<li> These are combined into one table with buttons for ease of navigation and to reduce the amount of modules displayed on the screen at one time. </li>
+				<li> Some improvements to BLU handling of oGCDs and weaving issues. </li>
 			</ul>
 		</>,
 		contributors: [CONTRIBUTORS.OTOCEPHALY],

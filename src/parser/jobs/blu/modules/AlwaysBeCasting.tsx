@@ -55,6 +55,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 
 	private timeSpentInDiamondBack: number = 0
 	private startTimeDiamondBack: number | undefined = undefined
+	private phantomManualKick: boolean = false
 
 	override gcdUptimeSuggestionContent: JSX.Element = <Trans id="blu.always-cast.description">
 		Make sure you're always doing something. It's often better to make small
@@ -106,10 +107,6 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		//waxing -- used to track max allowable weaves
 		this.addEventHook(playerFilter.status(this.data.statuses.WAXING_NOCTURNE.id).type('statusApply'), this.waxOn)
 		this.addEventHook(playerFilter.status(this.data.statuses.WAXING_NOCTURNE.id).type('statusRemove'), this.waxOff)
-
-		//waning -- it's ok to have downtime for this since it's intended
-		this.addEventHook(playerFilter.status(this.data.statuses.WANING_NOCTURNE.id).type('statusApply'), this.waneOn)
-		this.addEventHook(playerFilter.status(this.data.statuses.WANING_NOCTURNE.id).type('statusRemove'), this.waneOff)
 	}
 
 	private onDiamondBackApply(event: Events['statusApply']) {
@@ -172,6 +169,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		const currentChannel = allChannels[allChannels.length - 1]
 		if (currentChannel === null) { return }
 		currentChannel.data.manualKick = true
+		this.phantomManualKick = true
 	}
 
 	private onApplyChannel(event: Events['action']) {
@@ -185,45 +183,6 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		const tracker = this.noCastWindows.current
 		if (tracker !== undefined && !tracker.ignoreWindowIncludingUptime) {
 			tracker.expectedGCDDuration = event.timestamp - tracker.leadingGCDTime
-		}
-	}
-
-	private waneOn(event: Events['statusApply']) {
-		//if there is a channelling happening, we don't want to double count it
-		const tracker = this.noCastWindows.current
-		if (tracker !== undefined && this.channelHistory.getCurrent() !== undefined) {
-			tracker.expectedGCDDuration = event.timestamp - tracker.leadingGCDTime
-		}
-		//close window once status applied
-		this.checkAndSave(event.timestamp)
-		//create a window for tracking and debugging purposes
-		this.noCastWindows.current = {
-			leadingGCDTime: event.timestamp,
-			expectedGCDDuration: REACTION_TIME, //default to reaction time for when boss appears
-			availableOGCDTime: 0,
-			doNothingForegivness: 0,
-			actions: [],
-			isDeath: false,
-			ignoreWindowIncludingUptime: true,
-		}
-	}
-
-	private waneOff(event: Events['statusRemove']) {
-		const tracker = this.noCastWindows.current
-		if (tracker !== undefined) {
-			this.debug(`${this.data.getStatus(event.status)?.name} was active from ${this.parser.formatEpochTimestamp(tracker.leadingGCDTime)} to ${this.parser.formatEpochTimestamp(event.timestamp)}.`)
-		}
-		//start new window when status is back
-		this.checkAndSave(event.timestamp)
-		//create a window for tracking and debugging purposes
-		this.noCastWindows.current = {
-			leadingGCDTime: event.timestamp,
-			expectedGCDDuration: REACTION_TIME, //default to reaction time for when boss appears
-			availableOGCDTime: 0,
-			doNothingForegivness: 0,
-			actions: [],
-			isDeath: false,
-			ignoreWindowIncludingUptime: false,
 		}
 	}
 
@@ -252,7 +211,8 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 			)).length !== 0
 			&& window.actions.filter(ogcdActions => ogcdActions.action === this.data.actions.SURPANAKHA.id).length !== 0
 		//want only whole available oGCDs during window
-		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime) / OGCD_OFFSET), 0)
+		// note: adding an OGCD_OFFSET since there is already a lot of clipping for BLU. this is used to reduce noise
+		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime + OGCD_OFFSET) / OGCD_OFFSET), 0)
 		let checkIfBad: boolean = false
 		if (windowInMoonfluteWithSurp) {
 			checkIfBad = window.actions.length > Math.max(MAX_ALLOWED_MULTIWEAVE_DURING_MOON_FLUTE, availableOGCDs)
@@ -278,6 +238,12 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		}
 		if (surpChainNumber !== MAX_SURPANAKHA_CHARGES) {
 			this.badSurpanakhasChains += 1
+		}
+
+		// if phantom flurry last kick, add it to GCD since not technically recorded in initial window
+		if (this.phantomManualKick && this.noCastWindows.current !== undefined) {
+			this.noCastWindows.current.expectedGCDDuration = this.gcd.getDuration()
+			this.phantomManualKick = false
 		}
 
 		super.checkAndSave(endTime, event)
