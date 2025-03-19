@@ -1308,7 +1308,7 @@ export const BLU = ensureActions({
 		name: 'Winged Reprobation',
 		icon: iconUrl(3371),
 		onGcd: true,
-		castTime: 2000,
+		castTime: 1000,
 		gcdRecast: 2500,
 		cooldown: 120000,
 		damageType: PHYSICAL,

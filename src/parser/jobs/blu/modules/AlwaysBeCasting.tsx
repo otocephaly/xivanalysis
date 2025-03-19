@@ -56,6 +56,8 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 	private timeSpentInDiamondBack: number = 0
 	private startTimeDiamondBack: number | undefined = undefined
 	private phantomManualKick: boolean = false
+	private firstOGCDAddedConsideringRecast: boolean = false
+	private additionalRecast: number = 0
 
 	override gcdUptimeSuggestionContent: JSX.Element = <Trans id="blu.always-cast.description">
 		Make sure you're always doing something. It's often better to make small
@@ -69,6 +71,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 			<li>(2) Time spent under <DataLink action="DIAMONDBACK" /></li>
 			<li>(2) <DataLink status="WANING_NOCTURNE" />, the forced downtime following a <DataLink action="MOON_FLUTE" /></li>
 		</ul>
+		Additionally, if clipping makes sense, it is added to the expected GCD in the calculations for only the first oGCD.
 	</Trans>
 
 	@dependency private actors!: Actors
@@ -148,6 +151,13 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		if (tracker !== undefined && (event.action === this.data.actions.PHANTOM_FLURRY.id || event.action === this.data.actions.APOKALYPSIS.id)) {
 			const actionName = this.data.getAction(event.action)?.name
 			this.debug(`${actionName} began channeling at ${this.parser.formatEpochTimestamp(event.timestamp)}`)
+		}
+
+		// if oGCD add OGCD_OFFSET if castTime + OGCD_OFFSET > recast. since will be 0 if untrue, safe to add 0
+		const action = event !== undefined  && event.type === 'action' ? this.data.getAction(event?.action) : undefined
+		if (action !== undefined && event !== undefined && !this.firstOGCDAddedConsideringRecast && !action.onGcd && tracker !== undefined) {
+			tracker.expectedGCDDuration += this.additionalRecast
+			this.firstOGCDAddedConsideringRecast = true
 		}
 
 		super.onCast(event)
@@ -247,6 +257,14 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 		}
 
 		super.checkAndSave(endTime, event)
+		// add OGCD for BLU only to cast time if the recast time + OGCD is greater than expected GCD since clipping is ok for this job
+		const action = event !== undefined  && event.type === 'action' ? this.data.getAction(event?.action) : undefined
+		if (action !== undefined && event !== undefined && action.onGcd) {
+			const castTime: number = this.castTime.castForEvent(event) ?? this.gcd.getDuration()
+			const recastTime: number = this.castTime.recastForEvent(event) ?? this.gcd.getDuration()
+			this.firstOGCDAddedConsideringRecast = false
+			this.additionalRecast = Math.max(castTime + OGCD_OFFSET - recastTime, 0)
+		}
 	}
 
 	override onComplete(event: Events['complete']) {
