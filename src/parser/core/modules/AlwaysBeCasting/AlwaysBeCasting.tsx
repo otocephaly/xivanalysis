@@ -343,30 +343,31 @@ export class AlwaysBeCasting extends Analyser {
 
 		// debug print statements
 		this.checkInstance += 1
+		let instancePrint = `[${this.checkInstance}] `
 		if (!violation && this.debugShowOnlyViolations) { return } // return if we don't want so show debug statements for non-violations
-		if (!violation || this.debugShowOnlyViolations) {
-			this.debug(`Check instance: ${this.checkInstance}`)
-		} else {
-			this.debug(`Check instance: ${this.checkInstance} - VIOLATION NOTED!!!`)
+		if (violation && !this.debugShowOnlyViolations) {
+			instancePrint = `[VIOLATION!] ` + instancePrint
 		}
 		if (endTime === this.parser.pull.timestamp + this.parser.pull.duration && tracker.current.isDeath) {
 			// dead and fight ended
-			this.debug(`Player died at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} and stayed dead until EoF at ${this.parser.formatEpochTimestamp(endTime)} for a total of ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
+			this.debug(instancePrint + `Player died at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime, 1)} and stayed dead until EoF at ${this.parser.formatEpochTimestamp(endTime, 1)} for a total of ${endTime - tracker.current.leadingGCDTime}.`)
 		} else if (tracker.current.isDeath) {
 			// dead and fight didn't end
-			this.debug(`Player died at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} and ${this.data.statuses.TRANSCENDENT.name} dropped off at ${this.parser.formatEpochTimestamp(endTime)} for a total of ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
-		} else if (event === null && endTime === this.parser.pull.timestamp + this.parser.pull.duration && tracker.current.leadingGCDEvent === undefined) {
+			this.debug(instancePrint + `Player died at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime, 1)} and ${this.data.statuses.TRANSCENDENT.name} dropped off at ${this.parser.formatEpochTimestamp(endTime, 1)} for a total of ${endTime - tracker.current.leadingGCDTime}.`)
+		} else if (event === undefined && endTime === this.parser.pull.timestamp + this.parser.pull.duration && tracker.current.leadingGCDIcon === this.downtimeIcon) {
 			// end of fight and last instance of anything was start or end of downtime
-			this.debug(`Time between downtime (${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)}) and EoF (${this.parser.formatEpochTimestamp(endTime)}) was ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
-		} else if (event === null && tracker.current.leadingGCDEvent === undefined) {
+			this.debug(instancePrint + `Time between downtime (${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime, 1)}) and EoF (${this.parser.formatEpochTimestamp(endTime, 1)}) was ${endTime - tracker.current.leadingGCDTime}.`)
+		} else if (event === undefined && tracker.current.leadingGCDIcon === this.downtimeIcon) {
 			// both instances was downtime
-			this.debug(`Time between downtimes (${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} to ${this.parser.formatEpochTimestamp(endTime)}) was ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)}.`)
-		} else if (tracker.current.leadingGCDEvent === undefined && event !== undefined) {
+			this.debug(instancePrint + `Time between downtimes (${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime, 1)} to ${this.parser.formatEpochTimestamp(endTime, 1)}) was ${endTime - tracker.current.leadingGCDTime}.`)
+		} else if (tracker.current.leadingGCDIcon === this.downtimeIcon && event !== undefined) {
 			// cast/death following downtime
-			this.debug(`Expected delay following downtime at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} until ${this.parser.formatEpochTimestamp(endTime)} Est GCD/Recast: ${this.parser.formatDuration(tracker.current.expectedGCDDuration)} - Actual Duration: ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)} OGCDs: ${tracker.current.actions.length} Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
+			this.debug(instancePrint + `Expected delay following downtime at ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime, 1)} until ${this.parser.formatEpochTimestamp(endTime, 1)} Est GCD/Recast: ${tracker.current.expectedGCDDuration} - Actual Duration: ${endTime - tracker.current.leadingGCDTime} OGCDs: ${tracker.current.actions.length} Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
 		} else if (tracker.current.leadingGCDEvent !== undefined) {
 			// assumed successful cast
-			this.debug(`GCD Action: ${this.data.getAction(tracker.current.leadingGCDEvent.action)?.name} - Est GCD/Recast: ${this.parser.formatDuration(tracker.current.expectedGCDDuration)} - Started: ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime)} - Ended: ${this.parser.formatEpochTimestamp(endTime)} - Actual Duration: ${this.parser.formatDuration(endTime - tracker.current.leadingGCDTime)} - OGCDs: ${tracker.current.actions.length} - Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
+			this.debug(instancePrint + `GCD Action: ${this.data.getAction(tracker.current.leadingGCDEvent.action)?.name} - Est GCD/Recast: ${tracker.current.expectedGCDDuration} - Started: ${this.parser.formatEpochTimestamp(tracker.current.leadingGCDTime, 1)} - Ended: ${this.parser.formatEpochTimestamp(endTime, 1)} - Actual Duration: ${endTime - tracker.current.leadingGCDTime} - OGCDs: ${tracker.current.actions.length} - Interruptions: ${tracker.current.interruptedActions?.length ?? 0}`)
+		} else {
+			this.debug(`Something is awry`)
 		}
 
 		// return and reset if no violation
@@ -377,8 +378,12 @@ export class AlwaysBeCasting extends Analyser {
 
 		// Close the window
 		tracker.current.trailingGCDTime = endTime
+		const violationTime: number = endTime - tracker.current.leadingGCDTime - tracker.current.expectedGCDDuration
 		if (event !== undefined) { tracker.current.trailingGCDEvent = event }
-		if (endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration) { this.timeSpentNotCasting += endTime - tracker.current.leadingGCDTime - tracker.current.expectedGCDDuration }
+		if (violationTime > 0) {
+			this.timeSpentNotCasting += violationTime
+			this.debug(instancePrint + `Not casting added: ${violationTime}`)
+		}
 		tracker.history.push(tracker.current)
 		tracker.current = undefined
 	}
@@ -388,11 +393,11 @@ export class AlwaysBeCasting extends Analyser {
 	 * @param event either death or drop off of rez invuln
 	 */
 	private checkAndSaveDeath(event: Events['death'] | Events['statusRemove']) {
-		const tracker = this.noCastWindows.current
-		// check if any downtime between last cast and death. don't want to double count downtime. this statement will also prioritize death during downtime since we assess at ToD
-		if (tracker !== undefined && !tracker.isDeath) { this.checkAndSaveDowntime(tracker.leadingGCDTime, event.timestamp) }
 		// check if it's been more than a gcd length since death started
-		if (tracker !== undefined) { tracker.trailingGCDIcon = (event.type === 'death' ? this.deathIcon : this.rezIcon) }
+		// check if any downtime between last cast and death. don't want to double count downtime. this statement will also prioritize death during downtime since we assess at ToD
+		if (this.noCastWindows.current !== undefined && !this.noCastWindows.current.isDeath) { this.checkAndSaveDowntime(this.noCastWindows.current.leadingGCDTime, event.timestamp) }
+		// added to icon after in case it is saved during downtime
+		if (this.noCastWindows.current !== undefined) { this.noCastWindows.current.trailingGCDIcon = (event.type === 'death' ? this.deathIcon : this.rezIcon) }
 		this.checkAndSave(event.timestamp)
 		// this cast is our new last cast
 		this.noCastWindows.current = {
@@ -521,11 +526,11 @@ export class AlwaysBeCasting extends Analyser {
 		if (this.debug) {
 			this.downtime.getDowntimeWindows().forEach(
 				window => {
-					this.debug(`Downtime started ${this.parser.formatEpochTimestamp(window.start)} and ended ${this.parser.formatEpochTimestamp(window.end)} for a duration of ${this.parser.formatDuration(window.end - window.start)}.`)
+					this.debug(`Downtime started ${this.parser.formatEpochTimestamp(window.start, 1)} and ended ${this.parser.formatEpochTimestamp(window.end, 1)} for a duration of ${window.end - window.start}.`)
 				}
 			)
 		}
-		this.debug(`End of fight time: ${this.parser.formatEpochTimestamp(event.timestamp)} - Total excluded time: ${this.parser.formatDuration(this.totalExcludedTime)} - Time spent not casting: ${this.parser.formatDuration(this.timeSpentNotCasting)} - Uptime percent: ${uptimePercent}.`)
+		this.debug(`Total fight duration: ${this.parser.pull.duration} (Start: ${this.parser.formatEpochTimestamp(this.parser.pull.timestamp)} - End: ${this.parser.formatEpochTimestamp(this.parser.pull.timestamp + this.parser.pull.duration)}) - Total excluded time: ${this.totalExcludedTime} - Time spent not casting: ${this.timeSpentNotCasting} - Uptime percent: ${uptimePercent}.`)
 
 		const checklistFootnote =
 			<Trans id="core.abc.additional-info-rule">
