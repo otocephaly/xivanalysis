@@ -1,11 +1,12 @@
 import {Plural, Trans} from '@lingui/react'
 import {DataLink} from 'components/ui/DbLink'
+import {Action} from 'data/ACTIONS'
 import {Event, Events} from 'event'
 import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
 import {History} from 'parser/core/modules/ActionWindow/History'
 import {Actors} from 'parser/core/modules/Actors'
-import {ABCWindow, AnimationLock, AlwaysBeCasting as CoreAlwaysBeCasting, OGCD_OFFSET, REACTION_TIME} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
+import {ABCWindow, AnimationLock, AlwaysBeCasting as CoreAlwaysBeCasting, OGCD_OFFSET} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
 import {SimpleStatistic, Statistics} from 'parser/core/modules/Statistics'
 import {TieredSuggestion, SEVERITY} from 'parser/core/modules/Suggestions'
 
@@ -113,34 +114,20 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 	}
 
 	private onDiamondBackApply(event: Events['statusApply']) {
-		const tracker = this.noCastWindows.current
 		this.startTimeDiamondBack = event.timestamp
-		if (tracker === undefined) { return }
-		tracker.ignoreWindowIncludingUptime = true
 	}
 
 	private onDiamondBackRemove(event: Events['statusRemove']) {
-		//consider starting of new window in case they stop doing things right after (allow for reaction time)
-		this.checkAndSave(event.timestamp)
-		this.noCastWindows.current = {
-			leadingGCDTime: event.timestamp,
-			expectedGCDDuration: REACTION_TIME,
-			availableOGCDTime: 0,
-			doNothingForegivness: 0,
-			actions: [],
-			isDeath: false,
-			ignoreWindowIncludingUptime: false,
-		}
 		if (this.startTimeDiamondBack === undefined) { return } //can't really do much about this if we don't have the data
 		this.timeSpentInDiamondBack += event.timestamp - this.startTimeDiamondBack
 		this.startTimeDiamondBack = undefined //reset until next window
 	}
 
-	private onCastSurpanakha(event: Events['action']) {
+	private onCastSurpanakha() {
 		const tracker = this.noCastWindows.current
 		//for weaving purposes, surpanakha is fine to count and we will include this in gcd time for ease of tracking
-		if (tracker !== undefined && event.action === this.data.actions.SURPANAKHA.id) {
-			this.surpanakhas++
+		if (tracker !== undefined) {
+			this.surpanakhas += 1
 			tracker.expectedGCDDuration += SURPANAKHA_ANIMATION_LOCK_MS
 		}
 	}
@@ -235,19 +222,22 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 	protected override checkAndSave(endTime: number, event?: Events['action']): void {
 		//special case for surp where we want to check if all 4 had been casted in a row, if not add it to the tally
 		const tracker = this.noCastWindows.current
-		let surpChainNumber: number = 0
 		if (
 			tracker !== undefined
 			&& tracker.actions.filter(action => action.action === this.data.actions.SURPANAKHA.id).length !== 0
 		) {
+			let surpChainNumber: number = 0
+			let prevAction: Action['id'] | undefined = undefined
 			tracker.actions.forEach(action => {
-				if (action.action === this.data.actions.SURPANAKHA.id) {
+				if (action.action === this.data.actions.SURPANAKHA.id && prevAction !== undefined && prevAction === action.action) {
 					surpChainNumber += 1
 				}
+				prevAction = action.action
 			})
-		}
-		if (surpChainNumber !== MAX_SURPANAKHA_CHARGES) {
-			this.badSurpanakhasChains += 1
+			// only punish if the chains are broken which will happen if we don't see 3 chains (4 consecutive casts)
+			if (surpChainNumber !== (MAX_SURPANAKHA_CHARGES - 1)) {
+				this.badSurpanakhasChains += 1
+			}
 		}
 
 		// if phantom flurry last kick, add it to GCD since not technically recorded in initial window
