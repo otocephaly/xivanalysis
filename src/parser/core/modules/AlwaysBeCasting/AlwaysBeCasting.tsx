@@ -517,6 +517,8 @@ export class AlwaysBeCasting extends Analyser {
 	}
 
 	protected onComplete(event: Events['complete']) {
+		// for ease of reference make trailing gcd icon into downtime icon. This will help with interrupted spells on end of fight
+		if (this.noCastWindows.current !== undefined) { this.noCastWindows.current.trailingGCDIcon = this.downtimeIcon }
 		// finish up
 		this.checkAndSave(event.timestamp)
 
