@@ -12,6 +12,8 @@ const SSS_MAX_WEAVES = 4
 
 export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 
+	protected override additionalJitter: number = 100 // allows monk weaves to get in more smoothly for the ones around 2s
+
 	protected override determineBadWeave(window: ABCWindow) {
 		let checkIfBadMNK = super.determineBadWeave(window)
 		if (window.leadingGCDEvent !== undefined && window.leadingGCDEvent.action === this.data.actions.SIX_SIDED_STAR.id) {

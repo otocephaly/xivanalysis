@@ -109,8 +109,9 @@ export class AlwaysBeCasting extends Analyser {
 	// in case someone casts and then transcendence falls off
 	private prematureCast: Events['action'] | undefined = undefined
 
-	// some jobs might have exceptions where actions have an extra animation lock
+	// some jobs might have exceptions where actions have an extra animation lock or need a lil more forgiveness
 	protected ignoredActionIds: number[] = []
+	protected additionalJitter: number = 0 // used for jobs with low cast times such as mnk
 
 	// misc icons
 	private deathIcon: ReactNode = <DataLink status="WEAKNESS" showName={false} iconSize={styles.gcdSize} />
@@ -347,7 +348,7 @@ export class AlwaysBeCasting extends Analyser {
 		// consider violation if not an interrupted action nor expected GCD time
 		const violation: boolean = (
 			// if difference between endTime and leading time is greater than expected plus additional time between downtime
-			endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration + GCD_JITTER_OFFSET + downtime
+			endTime - tracker.current.leadingGCDTime > tracker.current.expectedGCDDuration + GCD_JITTER_OFFSET + downtime + this.additionalJitter
 			// if this event contains an interrupted action
 			|| (tracker.current.interruptedActions !== undefined && tracker.current.interruptedActions?.length !== 0)
 		)
