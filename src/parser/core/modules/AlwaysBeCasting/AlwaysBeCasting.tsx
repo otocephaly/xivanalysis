@@ -106,6 +106,8 @@ export class AlwaysBeCasting extends Analyser {
 	private prepareTime: number = this.parser.pull.timestamp //used for interrupts
 	// this is used to provide additional information on how long someone can actually access oGCDs for weaving
 	protected actionsWithExtraAnimationLock: AnimationLock[] | undefined = undefined
+	// in case someone casts and then transcendence falls off
+	private prematureCast: Events['action'] | undefined = undefined
 
 	// some jobs might have exceptions where actions have an extra animation lock
 	protected ignoredActionIds: number[] = []
@@ -188,6 +190,10 @@ export class AlwaysBeCasting extends Analyser {
 	 */
 	protected onCast(event: Events['action']) {
 		const action: Action | undefined = this.data.getAction(event.action)
+		if (this.aliveHook !== undefined) {
+			this.prematureCast = event
+			return
+		}
 
 		// if not an action or autoattack or if specifically ignored, stop
 		if (action === undefined) { return }
@@ -313,6 +319,11 @@ export class AlwaysBeCasting extends Analyser {
 		}
 		// want to end death event when no longer applicable
 		this.checkAndSaveDeath(event)
+		// can be a situation where the cast goes through before the status drops off, this is to help avoid that scenario
+		if (this.prematureCast !== undefined) {
+			this.onCast(this.prematureCast)
+			this.prematureCast = undefined
+		}
 	}
 
 	/**
@@ -403,7 +414,7 @@ export class AlwaysBeCasting extends Analyser {
 		this.noCastWindows.current = {
 			leadingGCDTime: event.timestamp,
 			leadingGCDIcon: event.type === 'death' ? this.deathIcon : this.rezIcon,
-			expectedGCDDuration: 0,
+			expectedGCDDuration: event.type === 'statusRemove' ? REACTION_TIME + OGCD_OFFSET : 0, // to allow for gap closers and reaction time after status drops off
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
