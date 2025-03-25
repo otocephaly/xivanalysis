@@ -1,7 +1,7 @@
 import {ActionKey} from 'data/ACTIONS'
 import {Events} from 'event'
 import {dependency} from 'parser/core/Injectable'
-import {AlwaysBeCasting as CoreAlwaysBeCasting, OGCD_OFFSET} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
+import {AlwaysBeCasting as CoreAlwaysBeCasting} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
 import {FIRE_SPELLS, ICE_SPELLS} from './Elements'
 import {Gauge, ASTRAL_UMBRAL_MAX_STACKS} from './Gauge'
 
@@ -36,7 +36,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 			|| (tracker?.leadingGCDEvent !== undefined && this.iceSpellIds.includes(tracker.leadingGCDEvent.action) && gaugeState.astralFire === ASTRAL_UMBRAL_MAX_STACKS)
 			|| (tracker?.leadingGCDEvent !== undefined && this.fireSpellIds.includes(tracker.leadingGCDEvent.action) && gaugeState.umbralIce === ASTRAL_UMBRAL_MAX_STACKS)
 		if (tracker !== undefined && condition) {
-			tracker.expectedGCDDuration += OGCD_OFFSET
+			tracker.expectedGCDDuration += this.ogcdOffset
 		}
 
 		super.onCast(event)

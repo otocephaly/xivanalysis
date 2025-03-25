@@ -6,7 +6,7 @@ import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
 import {History} from 'parser/core/modules/ActionWindow/History'
 import {Actors} from 'parser/core/modules/Actors'
-import {ABCWindow, AnimationLock, AlwaysBeCasting as CoreAlwaysBeCasting, OGCD_OFFSET} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
+import {ABCWindow, AnimationLock, AlwaysBeCasting as CoreAlwaysBeCasting} from 'parser/core/modules/AlwaysBeCasting/AlwaysBeCasting'
 import {SimpleStatistic, Statistics} from 'parser/core/modules/Statistics'
 import {TieredSuggestion, SEVERITY} from 'parser/core/modules/Suggestions'
 
@@ -209,7 +209,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 			&& window.actions.filter(ogcdActions => ogcdActions.action === this.data.actions.SURPANAKHA.id).length !== 0
 		//want only whole available oGCDs during window
 		// note: adding an OGCD_OFFSET since there is already a lot of clipping for BLU. this is used to reduce noise
-		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime + OGCD_OFFSET) / OGCD_OFFSET), 0)
+		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime + this.ogcdOffset) / this.ogcdOffset), 0)
 		let checkIfBad: boolean = false
 		if (windowInMoonfluteWithSurp) {
 			checkIfBad = window.actions.length > Math.max(MAX_ALLOWED_MULTIWEAVE_DURING_MOON_FLUTE, availableOGCDs)
@@ -253,7 +253,7 @@ export class AlwaysBeCasting extends CoreAlwaysBeCasting {
 			const castTime: number = this.castTime.castForEvent(event) ?? this.gcd.getDuration()
 			const recastTime: number = this.castTime.recastForEvent(event) ?? this.gcd.getDuration()
 			this.firstOGCDAddedConsideringRecast = false
-			this.additionalRecast = Math.max(castTime + OGCD_OFFSET - recastTime, 0)
+			this.additionalRecast = Math.max(castTime + this.ogcdOffset - recastTime, 0)
 		}
 	}
 

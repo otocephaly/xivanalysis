@@ -27,8 +27,8 @@ import {Severity, SEVERITY, SeverityTiers, Suggestions, TieredSuggestion} from '
 const GCD_JITTER_OFFSET: number = 50
 const GCD_CASTER_TAX_OFFSET: number = 100
 const DEFAULT_ACTION_ANIMATION_LOCK: number = 750
-export const OGCD_OFFSET: number = 800 // used to either assign blame to standing around or weaving
-export const REACTION_TIME: number = 250 // used to verify whether the first action was reasonable to wait on. i.e. did they start when the fight started? was it pulled early? how much did they wait from when the boss was available again
+const OGCD_OFFSET: number = 800 // used to either assign blame to standing around or weaving
+const REACTION_TIME: number = 250 // used to verify whether the first action was reasonable to wait on. i.e. did they start when the fight started? was it pulled early? how much did they wait from when the boss was available again
 
 // rule thresholds
 const UPTIME_TARGET: Severity = 98
@@ -100,6 +100,11 @@ export class AlwaysBeCasting extends Analyser {
 	private debugShowOnlyViolations: boolean = false
 	private checkInstance: number = 0
 
+	// constant options
+	protected ogcdOffset: number = OGCD_OFFSET
+	private defaultActionAnimationLock: number = DEFAULT_ACTION_ANIMATION_LOCK
+	private reactionTime: number = REACTION_TIME
+
 	protected noCastWindows: {current?: ABCWindow, history: ABCWindow[]} = {history: []}
 	private hardCastStartTime: number | undefined = undefined
 	private aliveHook: EventHook<Events['statusRemove']> | undefined = undefined
@@ -152,7 +157,7 @@ export class AlwaysBeCasting extends Analyser {
 	// footer
 	protected footer: ReactNode = <><Trans id="core.abc.notes-footer">
 		The icon ({this.downtimeIcon}) has been added to actions to show when downtime has started or ended.
-		A reaction time of {this.parser.formatDuration(REACTION_TIME + OGCD_OFFSET)} has been added after downtime, start of fight, or when <DataLink status="TRANSCENDENT" /> drops to track lost uptime when taking too long to get rolling again.
+		A reaction time of {this.parser.formatDuration(this.reactionTime + this.ogcdOffset)} has been added after downtime, start of fight, or when <DataLink status="TRANSCENDENT" /> drops to track lost uptime when taking too long to get rolling again.
 	</Trans></>
 
 	override initialise() {
@@ -196,6 +201,12 @@ export class AlwaysBeCasting extends Analyser {
 			return
 		}
 
+		// if currently in downtime, disregard cast
+		const tracker = this.noCastWindows.current
+		if (tracker !== undefined && this.downtime.isDowntime(event.timestamp)) {
+			return
+		}
+
 		// if not an action or autoattack or if specifically ignored, stop
 		if (action === undefined) { return }
 		if (action.autoAttack) { return }
@@ -205,7 +216,7 @@ export class AlwaysBeCasting extends Analyser {
 		const actionIsOGCD: boolean = !action.onGcd
 		if (actionIsOGCD && this.noCastWindows.current !== undefined) {
 			this.noCastWindows.current.actions.push(event)
-			this.noCastWindows.current.doNothingForegivness += OGCD_OFFSET
+			this.noCastWindows.current.doNothingForegivness += this.ogcdOffset
 			return
 		}
 
@@ -215,7 +226,7 @@ export class AlwaysBeCasting extends Analyser {
 			? GCD_CASTER_TAX_OFFSET : 0
 		// if swift up, no cast time. if not, check cast time if any. consider caster tax and animation lock
 		// again can't trust castTime since it defaults to zero for some reason. used attribute instead
-		const animationLock: number = this.actionsWithExtraAnimationLock?.find(item => item.actionID === event.action)?.timeLocked ?? DEFAULT_ACTION_ANIMATION_LOCK
+		const animationLock: number = this.actionsWithExtraAnimationLock?.find(item => item.actionID === event.action)?.timeLocked ?? this.defaultActionAnimationLock
 		const availableOGCDTime: number = casterTax
 			+ Math.max(animationLock, (this.castTime.castForEvent(event) ?? animationLock))
 		// take recast unless casttime is longer. this will also help with the cases of caster tax when recast = casttime
@@ -415,7 +426,7 @@ export class AlwaysBeCasting extends Analyser {
 		this.noCastWindows.current = {
 			leadingGCDTime: event.timestamp,
 			leadingGCDIcon: event.type === 'death' ? this.deathIcon : this.rezIcon,
-			expectedGCDDuration: event.type === 'statusRemove' ? REACTION_TIME + OGCD_OFFSET : 0, // to allow for gap closers and reaction time after status drops off
+			expectedGCDDuration: event.type === 'statusRemove' ? this.reactionTime + this.ogcdOffset : 0, // to allow for gap closers and reaction time after status drops off
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
@@ -446,11 +457,12 @@ export class AlwaysBeCasting extends Analyser {
 			downtimeWindows.forEach(window => {
 				const tracker = this.noCastWindows.current
 				if (tracker !== undefined) { tracker.trailingGCDIcon = this.downtimeIcon }
+				if (window.start === window.end) { return }
 				this.checkAndSave(window.start)
 				this.noCastWindows.current = {
 					leadingGCDTime: window.end,
 					leadingGCDIcon: this.downtimeIcon,
-					expectedGCDDuration: REACTION_TIME + OGCD_OFFSET, // default to reaction time for when boss appears and allow time for a gap closer (1 oGCD)
+					expectedGCDDuration: this.reactionTime + this.ogcdOffset, // default to reaction time for when boss appears and allow time for a gap closer (1 oGCD)
 					availableOGCDTime: 0,
 					doNothingForegivness: 0,
 					actions: [],
@@ -468,7 +480,7 @@ export class AlwaysBeCasting extends Analyser {
 		this.noCastWindows.current = {
 			leadingGCDTime: this.parser.pull.timestamp,
 			leadingGCDIcon: this.downtimeIcon,
-			expectedGCDDuration: REACTION_TIME + OGCD_OFFSET, // give benefit of early pull with reaction time and OGCD for gap close
+			expectedGCDDuration: this.reactionTime + this.ogcdOffset, // give benefit of early pull with reaction time and OGCD for gap close
 			availableOGCDTime: 0,
 			doNothingForegivness: 0,
 			actions: [],
@@ -498,7 +510,7 @@ export class AlwaysBeCasting extends Analyser {
 	 */
 	protected determineBadWeave(window: ABCWindow): boolean {
 		// want only whole available oGCDs during window
-		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime) / OGCD_OFFSET), 0)
+		const availableOGCDs: number = Math.max(Math.floor((window.expectedGCDDuration - window.availableOGCDTime) / this.ogcdOffset), 0)
 		const checkIfBad = window.actions.length > availableOGCDs
 		return checkIfBad
 	}
