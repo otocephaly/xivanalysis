@@ -5,6 +5,7 @@ import {AlwaysBeCasting} from './AlwaysBeCasting'
 import {AoEUsages} from './AoEUsages'
 import {CastTime} from './CastTime'
 import {Defensives} from './Defensives'
+import {DoTs} from './DoTs'
 import {Gauge} from './Gauge'
 import {Leylines} from './Leylines'
 import {OGCDDowntime} from './OGCDDowntime'
@@ -26,6 +27,7 @@ export const modules = [
 	OGCDDowntime,
 	Procs,
 	RotationWatchdog,
+	DoTs,
 	Thunder,
 	Triplecast,
 ]
