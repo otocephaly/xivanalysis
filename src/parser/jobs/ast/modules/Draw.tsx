@@ -15,6 +15,7 @@ import {PLAY_I, OFFENSIVE_ARCANA_STATUS} from './ArcanaGroups'
 
 const oGCD_ALLOWANCE = 7500 //used in case the last draw comes up in the last second of the fight. Since plays are typically done in a separate weave, a full GCD would be needed to play the card. Takes another second to cast PLAY and therefore an AST would not DRAW if they couldn't even PLAY. Additionally, an AST would not play if not even a GCD could be cast before the end of the fight. Therefore, the oGCD_ALLOWANCE should be approcimately 3 GCDs (2 for AST to cast, 1 for job to do an action) = 3 * 2500
 const INTENTIONAL_DRIFT_FOR_BURST = 7500 //gcds until draw is used in opener
+const ADDITIONAL_CD_TO_ALIGN_WITH_DIVINATION = 5000 // 5s chosen since CD is 55s and div is 120s
 
 const SEVERITIES = {
 	DRAW_HOLDING: { //harsh thresholds were chosen since a drift will invariably mess up burst alignment
@@ -34,6 +35,7 @@ export class Draw extends Analyser {
 	private draws: number = 0
 	private cooldownEndTime: number = this.parser.pull.timestamp
 	private drawTotalDrift: number = 0
+	private additionalCD: number = ADDITIONAL_CD_TO_ALIGN_WITH_DIVINATION
 	private playIs: number = 0
 	private playLord: number = 0
 	private playLady: number = 0
@@ -87,7 +89,8 @@ export class Draw extends Analyser {
 			this.drawTotalDrift += Math.max(0, event.timestamp - this.cooldownEndTime)
 
 			// update the last use
-			this.cooldownEndTime = this.data.actions.ASTRAL_DRAW.cooldown + Math.max(this.cooldownEndTime, event.timestamp) //note UMBRAL and ASTRAL share same CD
+			this.cooldownEndTime = this.data.actions.ASTRAL_DRAW.cooldown + this.additionalCD + Math.max(this.cooldownEndTime, event.timestamp)
+			//note UMBRAL and ASTRAL share same CD and we also want to align with divination
 			this.draws++
 		}
 	}
@@ -124,8 +127,9 @@ export class Draw extends Analyser {
 		// in otherwords, fightDuration - 15s (for the buff @ CARD_DURATION)
 
 		// Begin Theoretical Max Plays calc
-		const playsFromDraw = Math.ceil(Math.max(0, (this.parser.pull.duration - oGCD_ALLOWANCE - INTENTIONAL_DRIFT_FOR_BURST)) / this.data.actions.ASTRAL_DRAW.cooldown)
-		const lordPlaysFromDraw = Math.ceil(Math.max(0, (this.parser.pull.duration - oGCD_ALLOWANCE - INTENTIONAL_DRIFT_FOR_BURST)) / (this.data.actions.ASTRAL_DRAW.cooldown * 2)) //*2 done since they share the same cooldown and same button
+		const cooldownToConsider: number = this.data.actions.ASTRAL_DRAW.cooldown + this.additionalCD // Additional CD added to align with divination
+		const playsFromDraw = Math.ceil(Math.max(0, (this.parser.pull.duration - oGCD_ALLOWANCE - INTENTIONAL_DRIFT_FOR_BURST)) / cooldownToConsider)
+		const lordPlaysFromDraw = Math.ceil(Math.max(0, (this.parser.pull.duration - oGCD_ALLOWANCE - INTENTIONAL_DRIFT_FOR_BURST)) / (cooldownToConsider * 2)) //*2 done since they share the same cooldown and same button
 
 		// TODO: Include downtime calculation for each fight??
 
@@ -139,10 +143,11 @@ export class Draw extends Analyser {
 		this.checklist.add(new Rule({
 			displayOrder: DISPLAY_ORDER.DRAW_CHECKLIST,
 			name: <Trans id="ast.draw.checklist.name">
-				Play as many cards as possible
+				Play as many cards as possible considering <DataLink action="DIVINATION" /> windows.
 			</Trans>,
 			description: <><Trans id="ast.draw.checklist.description">
 				These cards provide additional damage either directly (<DataLink action="LORD_OF_CROWNS" />) or for the party (<DataLink action="THE_BALANCE" /> / <DataLink action="THE_SPEAR" />).
+				<br/>Cards should be played in alignment with <DataLink action="DIVINATION" /> as much as possible. The below has been adjusted with this in mind.
 				<br/>Casting <DataLink action="ASTRAL_DRAW" /> and <DataLink action="UMBRAL_DRAW" /> will help with mana management.
 			</Trans>
 			<li><Trans id="ast.draw.checklist.description.total">Total cards obtained:</Trans>&nbsp;{totalCardsObtained}/{theoreticalMaxPlays}</li>
@@ -165,7 +170,7 @@ export class Draw extends Analyser {
 			],
 		}))
 
-		const drawsMissed = Math.floor(this.drawTotalDrift / this.data.actions.ASTRAL_DRAW.cooldown)
+		const drawsMissed = Math.floor(this.drawTotalDrift / (this.data.actions.ASTRAL_DRAW.cooldown + this.additionalCD))
 		if (this.draws === 0) {
 		/*
 		SUGGESTION: Didn't use draw at all
@@ -187,12 +192,12 @@ export class Draw extends Analyser {
 			this.suggestions.add(new TieredSuggestion({
 				icon: this.data.actions.ASTRAL_DRAW.icon,
 				content: <Trans id="ast.draw.suggestions.draw-uses.content">
-						Consider casting <DataLink action="ASTRAL_DRAW" /> / <DataLink action="UMBRAL_DRAW" /> as soon as its available to maximize both MP regen and the number of cards played.
+						Consider casting <DataLink action="ASTRAL_DRAW" /> / <DataLink action="UMBRAL_DRAW" /> in a timely manner to align with <DataLink action="DIVINATION" /> to ensure 2 cards are in every window and to help with mana management.
 				</Trans>,
 				tiers: SEVERITIES.DRAW_HOLDING,
 				value: drawsMissed,
 				why: <Trans id="ast.draw.suggestions.draw-uses.why">
-					About <Plural value={drawsMissed} one="# use" other="# uses" /> of <DataLink action="ASTRAL_DRAW" /> / <DataLink action="UMBRAL_DRAW" /> <Plural value={drawsMissed} one="was" other="were" /> missed by holding cards on full cooldown for at least a total of {this.parser.formatDuration(this.drawTotalDrift)}.
+					About <Plural value={drawsMissed} one="# use" other="# uses" /> of <DataLink action="ASTRAL_DRAW" /> / <DataLink action="UMBRAL_DRAW" /> <Plural value={drawsMissed} one="was" other="were" /> missed by drifting cards outside <DataLink action="DIVINATION" /> for at least a total of {this.parser.formatDuration(this.drawTotalDrift)}.
 				</Trans>,
 			}))
 		}

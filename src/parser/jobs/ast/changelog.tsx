@@ -3,6 +3,11 @@ import {CONTRIBUTORS} from 'data/CONTRIBUTORS'
 
 export const changelog = [
 	{
+		date: new Date('2025-04-16'),
+		Changes: () => <>Fixed draw suggestion and checklist to align better with <DataLink action="DIVINATION" />. </>,
+		contributors: [CONTRIBUTORS.OTOCEPHALY],
+	},
+	{
 		date: new Date('2025-03-26'),
 		Changes: () => <>Added AoE Usages section and adjusted <DataLink action="MACROCOSMOS" /> suggestion to exclude considerations for <DataLink action="GRAVITY_II" />. </>,
 		contributors: [CONTRIBUTORS.OTOCEPHALY],
