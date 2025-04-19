@@ -3,8 +3,10 @@ import {CONTRIBUTORS} from 'data/CONTRIBUTORS'
 
 export const changelog = [
 	{
-		date: new Date('2025-04-16'),
-		Changes: () => <>Fixed draw suggestion and checklist to align better with <DataLink action="DIVINATION" />. </>,
+		date: new Date('2025-04-19'),
+		Changes: () => <>Fixed draw suggestions and checklist to align better with <DataLink action="DIVINATION" />.
+			<br/> Added a suggestion when using Draw (overwritting) when there is an available <DataLink action="LORD_OF_CROWNS" /> or <DataLink action="PLAY_I" />.
+			<br/> Updated <DataLink action="MACROCOSMOS" /> suggestion with higher thresholds and better wording to align better with defensives in a way. </>,
 		contributors: [CONTRIBUTORS.OTOCEPHALY],
 	},
 	{
