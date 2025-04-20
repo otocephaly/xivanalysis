@@ -159,11 +159,11 @@ export class Draw extends Analyser {
 		this.checklist.add(new Rule({
 			displayOrder: DISPLAY_ORDER.DRAW_CHECKLIST,
 			name: <Trans id="ast.draw.checklist.name">
-				Play as many cards as possible considering <DataLink action="DIVINATION" /> windows.
+				Draw cards in preparation for <DataLink action="DIVINATION" /> windows.
 			</Trans>,
 			description: <><Trans id="ast.draw.checklist.description">
 				These cards provide additional damage either directly (<DataLink action="LORD_OF_CROWNS" />) or for the party (<DataLink action="THE_BALANCE" /> / <DataLink action="THE_SPEAR" />).
-				<br/>Cards should be played in alignment with <DataLink action="DIVINATION" /> as much as possible. The below has been adjusted with this in mind.
+				<br/>Cards should be played in alignment with <DataLink action="DIVINATION" /> as much as possible.
 				<br/>Casting <DataLink action="ASTRAL_DRAW" /> and <DataLink action="UMBRAL_DRAW" /> will help with mana management.
 			</Trans>
 			</>,
