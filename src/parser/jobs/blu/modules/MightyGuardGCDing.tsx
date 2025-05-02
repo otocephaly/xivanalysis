@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
 import {Analyser} from 'parser/core/Analyser'
@@ -11,7 +11,7 @@ import {Suggestions, SEVERITY, TieredSuggestion} from 'parser/core/modules/Sugge
 
 export class MightyGuardGCDing extends Analyser {
 	static override handle = 'mightyguard'
-	static override title = t('blu.mighty_guard.title')`Mighty Guard`
+	static override title = msg({id: 'blu.mighty_guard.title', message: 'Mighty Guard'})
 
 	@dependency private data!: Data
 	@dependency private suggestions!: Suggestions

@@ -1,4 +1,5 @@
-import {Plural, t, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {getDataBy} from 'data'
 import {Status} from 'data/STATUSES'
@@ -17,7 +18,7 @@ import {Procs} from './Procs'
 
 export class Triplecast extends BuffWindow {
 	static override handle = 'triplecast'
-	static override title = t('blm.triplecast.title')`Triplecast Actions`
+	static override title = msg({id: 'blm.triplecast.title', message: 'Triplecast Actions'})
 	static override displayOrder: number = DISPLAY_ORDER.TRIPLECAST
 
 	@dependency private actors!: Actors

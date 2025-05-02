@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {Analyser, DisplayMode} from 'parser/core/Analyser'
 import {DISPLAY_ORDER} from '../DISPLAY_ORDER'
 import {
@@ -22,7 +22,7 @@ export class Timeline extends Analyser {
 	static override handle = 'timeline'
 	static override displayOrder = DISPLAY_ORDER.TIMELINE
 	static override displayMode = DisplayMode.FULL
-	static override title = t('core.timeline.title')`Timeline`
+	static override title = msg({id: 'core.timeline.title', message: 'Timeline'})
 
 	private setView?: SetViewFn
 
@@ -70,9 +70,11 @@ export class Timeline extends Analyser {
 
 	override output() {
 		return <>
-			<Trans id="core.timeline.help-text" render="span" className={styles.helpText}>
-				Scroll or click+drag to pan, ctrl+scroll or pinch to zoom.
-			</Trans>
+			<span className={styles.helpText}>
+				<Trans id="core.timeline.help-text">
+					Scroll or click+drag to pan, ctrl+scroll or pinch to zoom.
+				</Trans>
+			</span>
 			<TimelineComponent
 				rows={this.rows}
 				items={this.items}

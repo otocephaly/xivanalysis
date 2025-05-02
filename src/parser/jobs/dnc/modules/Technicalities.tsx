@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -51,7 +51,7 @@ const BAD_TECHNICAL_GCDS: ActionKey[] = [
 
 export class Technicalities extends RaidBuffWindow {
 	static override handle = 'technicalities'
-	static override title = t('dnc.technicalities.title')`Technical Windows`
+	static override title = msg({id: 'dnc.technicalities.title', message: 'Technical Windows'})
 	static override displayOrder = DISPLAY_ORDER.TECHNICALITIES
 
 	@dependency private gauge!: Gauge

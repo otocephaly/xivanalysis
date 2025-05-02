@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import Color from 'color'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
@@ -30,7 +30,7 @@ const CHAKRA_COLOUR = Color(JOBS.MONK.colour).fade(FADE_AMOUNT)
 
 export class Chakra extends Gauge {
 	static override handle = 'chakra'
-	static override title = t('mnk.gauge.chakra.title')`Chakra`
+	static override title = msg({id: 'mnk.gauge.chakra.title', message: 'Chakra'})
 
 	@dependency private suggestions!: Suggestions
 

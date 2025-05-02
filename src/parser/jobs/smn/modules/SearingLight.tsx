@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {Status} from 'data/STATUSES'
 import {RaidBuffWindow, ExpectedActionsEvaluator} from 'parser/core/modules/ActionWindow'
@@ -8,7 +8,7 @@ import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
 export class SearingLight extends RaidBuffWindow {
 	static override handle = 'searinglight'
-	static override title = t('smn.searinglight.title')`Searing Light`
+	static override title = msg({id: 'smn.searinglight.title', message: 'Searing Light'})
 	static override displayOrder = DISPLAY_ORDER.SEARING_LIGHT
 
 	override buffStatus: Status | Status[] = this.data.statuses.SEARING_LIGHT

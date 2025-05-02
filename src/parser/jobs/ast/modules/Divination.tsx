@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
 import {EventHook} from 'parser/core/Dispatcher'
@@ -24,7 +24,7 @@ const BASE_GCDS_PER_WINDOW = 8
 
 export class Divination extends RaidBuffWindow {
 	static override handle = 'Divination'
-	static override title = t('ast.divination.title')`Divination`
+	static override title = msg({id: 'ast.divination.title', message: 'Divination'})
 	static override displayOrder = DISPLAY_ORDER.DIVINATION
 
 	@dependency private globalCooldown!: GlobalCooldown
@@ -186,7 +186,7 @@ export class Divination extends RaidBuffWindow {
 				<Message error icon>
 					<Icon name="remove"/>
 					<Message.Content>
-						<Trans id="ast.divination.messages.no-casts"> There were no casts recorded for <DataLink action="DIVINATION" />.</Trans>
+						<Trans id="ast.divination.messages.no-casts">There were no casts recorded for <DataLink action="DIVINATION" />.</Trans>
 					</Message.Content>
 				</Message>
 				{this.appendMessages}

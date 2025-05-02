@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
 import _ from 'lodash'
@@ -29,7 +29,7 @@ class SonicBreakApplication {
 
 export class SonicBreak extends Analyser {
 	static override handle = 'Sonic Break'
-	static override title = t('gnb.sonic-break.title')`Sonic Break`
+	static override title = msg({id: 'gnb.sonic-break.title', message: 'Sonic Break'})
 	static override displayOrder = DISPLAY_ORDER.SONIC_BREAK
 
 	@dependency private data!: Data
@@ -111,7 +111,7 @@ export class SonicBreak extends Analyser {
 			this.suggestions.add(new TieredSuggestion({
 				icon: this.data.actions.SONIC_BREAK.icon,
 				content: <Trans id="gnb.sonic-break.suggestions.missing-ticks.content">
-					One or more of your <DataLink action = "SONIC_BREAK"/> DoTs had ticks that did not deal damage. </Trans>,
+					One or more of your <DataLink action = "SONIC_BREAK"/>DoTs had ticks that did not deal damage.</Trans>,
 				tiers: {
 					1: SEVERITY.MINOR,
 					5: SEVERITY.MEDIUM,
@@ -119,7 +119,7 @@ export class SonicBreak extends Analyser {
 
 				},
 				value: missedTicks,
-				why: <Trans id = "gnb.sonic-break.suggestions.missing-ticks.why"> You wasted <Plural value= {missedTicks} one="# tick" other="# ticks"/> of <DataLink action = "SONIC_BREAK"/> </Trans>,
+				why: <Trans id = "gnb.sonic-break.suggestions.missing-ticks.why">You wasted <Plural value= {missedTicks} one="# tick" other="# ticks"/> of <DataLink action = "SONIC_BREAK"/></Trans>,
 			},
 			))
 		}

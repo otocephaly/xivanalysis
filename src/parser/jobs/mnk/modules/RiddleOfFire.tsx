@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -48,7 +48,7 @@ const IGNORED_ACTIONS: ActionKey[] = [
 
 export class RiddleOfFire extends BuffWindow {
 	static override handle = 'riddleoffire'
-	static override title = t('mnk.rof.title')`Riddle of Fire`
+	static override title = msg({id: 'mnk.rof.title', message: 'Riddle of Fire'})
 	static override displayOrder = DISPLAY_ORDER.RIDDLE_OF_FIRE
 
 	@dependency private cooldowns!: Cooldowns

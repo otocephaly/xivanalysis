@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {RaidBuffWindow, EvaluatedAction, TrackedActionGroup, ExpectedActionGroupsEvaluator} from 'parser/core/modules/ActionWindow'
 import {DisplayedActionEvaluator} from 'parser/core/modules/ActionWindow/evaluators/DisplayedActionEvaluator'
@@ -28,13 +28,13 @@ const OPENER_FEE = -0.5 // Opener costs half a burst
 
 export class ArcaneCircle extends RaidBuffWindow {
 	static override handle = 'arcaneCircle'
-	static override title = t('rpr.arcanecircle.title')`Arcane Circle`
+	static override title = msg({id: 'rpr.arcanecircle.title', message: 'Arcane Circle'})
 	static override displayOrder = DISPLAY_ORDER.ARCANE_CIRCLE
 
 	override buffStatus = this.data.statuses.ARCANE_CIRCLE
 
 	override prependMessages = <Message info>
-		<Trans id="rpr.arcanecircle.prepend-message"> <ActionLink action="PERFECTIO"/> should be used under <ActionLink action="ARCANE_CIRCLE"/> when possible, but certain factors, such as needing to continue combo to prevent combo break or using it as a disengage tool to keep uptime, are more important than putting it in buffs. </Trans>
+		<Trans id="rpr.arcanecircle.prepend-message"><ActionLink action="PERFECTIO"/> should be used under <ActionLink action="ARCANE_CIRCLE"/> when possible, but certain factors, such as needing to continue combo to prevent combo break or using it as a disengage tool to keep uptime, are more important than putting it in buffs.</Trans>
 	</Message>
 
 	override initialise() {

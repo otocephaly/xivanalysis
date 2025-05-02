@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {RotationTable} from 'components/ui/RotationTable'
 import {Event, Events} from 'event'
@@ -40,7 +40,7 @@ interface WildfireWindow {
 
 export class Wildfire extends Analyser {
 	static override handle = 'wildfire'
-	static override title = t('mch.wildfire.title')`Wildfire`
+	static override title = msg({id: 'mch.wildfire.title', message: 'Wildfire'})
 
 	@dependency private data!: Data
 	@dependency private suggestions!: Suggestions

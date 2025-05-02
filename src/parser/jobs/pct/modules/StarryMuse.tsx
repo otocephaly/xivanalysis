@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Action} from 'data/ACTIONS'
 import {Status} from 'data/STATUSES'
@@ -16,7 +16,7 @@ const BASE_GCDS_PER_WINDOW = 9
 
 export class StarryMuse extends RaidBuffWindow {
 	static override handle = 'starrymuse'
-	static override title = t('pct.starrymuse.title')`Starry Muse`
+	static override title = msg({id: 'pct.starrymuse.title', message: 'Starry Muse'})
 	static override displayOrder = DISPLAY_ORDER.STARRY_MUSE
 
 	@dependency private globalCooldown!: GlobalCooldown

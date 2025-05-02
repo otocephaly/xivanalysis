@@ -1,4 +1,5 @@
-import {t, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {EvaluatedAction, ExpectedActionsEvaluator, TimedWindow} from 'parser/core/modules/ActionWindow'
 import {HistoryEntry} from 'parser/core/modules/ActionWindow/History'
@@ -14,11 +15,11 @@ const SEVERITY_TIERS = {
 const OPENER_BUFFER = 30000 //After 30 seconds, you have reached the point that you could do 2 reawakens if you burst right there.
 const DOUBLE_AWAKKEN_TIME = 30000 //Time it takes to double reawaken after Ire. it's coded to 1 GCD + 2 reawakens length of time.
 
-const PREPEND_MESSAGE = <Trans id="vpr.serpentsIre.prepend-message"><DataLink action="SERPENTS_IRE"/> is the sign that a 2 minute window for party buffs is coming up. After using it, you should do 1 more GCD if needed to align with 2 minute buffs before using 2 full <DataLink action="REAWAKEN"/> windows back to back to maximize damage under buffs. </Trans>
+const PREPEND_MESSAGE = <Trans id="vpr.serpentsIre.prepend-message"><DataLink action="SERPENTS_IRE"/> is the sign that a 2 minute window for party buffs is coming up. After using it, you should do 1 more GCD if needed to align with 2 minute buffs before using 2 full <DataLink action="REAWAKEN"/> windows back to back to maximize damage under buffs.</Trans>
 
 export class SerpentsIre extends TimedWindow { // AKA Peusdo 2 Minute Window
 	static override handle = 'serpentsIre'
-	static override title = t('vpr.serpents_ire.title')`Serpent's Ire`
+	static override title = msg({id: 'vpr.serpents_ire.title', message: 'Serpent\'s Ire'})
 	static override displayOrder = DISPLAY_ORDER.SERPENTS_IRE
 
 	override startAction = this.data.actions.SERPENTS_IRE
@@ -49,7 +50,8 @@ export class SerpentsIre extends TimedWindow { // AKA Peusdo 2 Minute Window
 			],
 			suggestionIcon: this.data.actions.SERPENTS_IRE.icon,
 			suggestionContent: <Trans id="vpr.serpents_ire.suggestions.trackedActions.content">
-				Make sure that you are pooling your Serpent's Offerings gauge to maximize the number of <DataLink action="REAWAKEN"/>s and <DataLink action="OUROBOROS"/>s that you can do under raid buffs. </Trans>,
+				Make sure that you are pooling your Serpent's Offerings gauge to maximize the number of <DataLink action="REAWAKEN"/>s and <DataLink action="OUROBOROS"/>s that you can do under raid buffs.
+			</Trans>,
 			suggestionWindowName: <DataLink action="SERPENTS_IRE"/>,
 			severityTiers: SEVERITY_TIERS,
 			adjustCount: this.adjustExpectedActionCount,

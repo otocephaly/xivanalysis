@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {DataLink, StatusLink} from 'components/ui/DbLink'
 import {Status} from 'data/STATUSES'
 import {dependency} from 'parser/core/Injectable'
@@ -46,7 +46,7 @@ export class Continuation extends CoreProcs {
 		})
 
 		this.checklist.add(new Rule({
-			name: <Trans id="gnb.contiunation.usage.title">Use your <DataLink action="CONTINUATION"/> skills </Trans>,
+			name: <Trans id="gnb.contiunation.usage.title">Use your <DataLink action="CONTINUATION"/> skills</Trans>,
 			description: <Trans id="gnb.contiunation.checklist.content">
 				Gunbreaker can follow up cartridge skills with <DataLink action="CONTINUATION"/> skills. Make sure to usse them immediately as they will fall off if another GCD is pressed.
 			</Trans>,

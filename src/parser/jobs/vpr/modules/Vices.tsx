@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {Action} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -117,7 +117,7 @@ export class Vices extends Analyser {
 		}
 
 		this.checklist.add(new Rule({
-			name: <Trans id="VPR.vice.waste.name"> Use your <DataLink action="VICEWINDER"/> & <DataLink action="VICEPIT" /> follow-ups </Trans>,
+			name: <Trans id="vpr.vice.waste.name">Use your <DataLink action="VICEWINDER"/> & <DataLink action="VICEPIT" /> follow-ups</Trans>,
 			displayOrder: DISPLAY_ORDER.VICES,
 			target: PERFECTIO,
 			description: <Trans id="vpr.vice.waste.content">

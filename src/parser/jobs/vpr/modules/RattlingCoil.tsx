@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import Color from 'color'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
@@ -21,7 +21,7 @@ const COIL_COLOR = Color('#DC1E32') // Red like the Job Gauge to help split serp
 
 export class RattlingCoil extends CoreGauge {
 	static override handle = 'rattlingcoil'
-	static override title = t('vpr.rattlingcoil.title')`Rattling Coil Timeline`
+	static override title = msg({id: 'vpr.rattlingcoil.title', message: 'Rattling Coil Timeline'})
 
 	@dependency private suggestions!: Suggestions
 	@dependency private checklist!: Checklist
@@ -115,7 +115,7 @@ export class RattlingCoil extends CoreGauge {
 		}))
 
 		this.checklist.add(new Rule({
-			name: <Trans id="vpr.rattlingcoil.usage.title"> <DataLink action="UNCOILED_FURY"/> Usage</Trans>,
+			name: <Trans id="vpr.rattlingcoil.usage.title"><DataLink action="UNCOILED_FURY"/> Usage</Trans>,
 			description: <Trans id="vpr.rattlingcoilwaste.content">
 				Wasted rattling coil generation, ending the fight with rattling coils remaining, or dying with rattling coils coiled is a
 				direct potency loss. Use <ActionLink action="UNCOILED_FURY"/> to avoid wasting rattling coils.
@@ -124,19 +124,17 @@ export class RattlingCoil extends CoreGauge {
 			</Trans>,
 			requirements: [
 				new Requirement({
-					name: <Trans id="vpr.rattlingcoil.checklist.requirement.waste.name">
-						<DataLink action="UNCOILED_FURY"/>
-					</Trans>,
+					name: <DataLink action="UNCOILED_FURY"/>,
 					value: this.coilGauge.totalSpent,
 					target: this.coilGauge.totalGenerated,
 				}),
 				new Requirement({
-					name: <Trans id="vpr.rattlingcoil.checklist.requirement.twinblood.name"> <DataLink action="UNCOILED_TWINBLOOD"/></Trans>,
+					name: <DataLink action="UNCOILED_TWINBLOOD"/>,
 					value: this.uncoiledTwinbloods,
 					target: this.coilGauge.totalGenerated,
 				}),
 				new Requirement({
-					name: <Trans id="vpr.rattlingcoil.checklist.requirement.twinfang.name"> <DataLink action="UNCOILED_TWINFANG"/></Trans>,
+					name: <DataLink action="UNCOILED_TWINFANG"/>,
 					value: this.uncoiledTwinfangs,
 					target: this.coilGauge.totalGenerated,
 				}),

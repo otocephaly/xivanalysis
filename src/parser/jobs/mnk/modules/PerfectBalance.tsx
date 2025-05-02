@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import Color from 'color'
 import {DataLink} from 'components/ui/DbLink'
 import {Action, ActionKey} from 'data/ACTIONS'
@@ -55,7 +55,7 @@ const CHAKRA_TO_BLITZ = 3
 export class PerfectBalance extends Gauge {
 	static override debug = false
 	static override handle = 'perfectBalance'
-	static override title = t('mnk.pb.title')`Perfect Balance`
+	static override title = msg({id: 'mnk.pb.title', message: 'Perfect Balance'})
 	static override displayOrder = DISPLAY_ORDER.PERFECT_BALANCE
 
 	@dependency private suggestions!: Suggestions

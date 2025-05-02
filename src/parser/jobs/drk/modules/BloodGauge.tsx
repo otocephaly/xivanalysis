@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {Action} from 'data/ACTIONS'
 import {JOBS} from 'data/JOBS'
 import {Event, Events} from 'event'
@@ -19,7 +19,7 @@ const BLOOD_OVERCAP_SEVERITY = {
 }
 
 export class BloodGauge extends CoreGauge {
-	static override title = t('drk.gauge.title')`Blood Gauge`
+	static override title = msg({id: 'drk.gauge.title', message: 'Blood Gauge'})
 
 	@dependency private actors!: Actors
 	@dependency private suggestions!: Suggestions

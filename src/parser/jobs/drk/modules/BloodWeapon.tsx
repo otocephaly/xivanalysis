@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {dependency} from 'parser/core/Injectable'
 import {BuffWindow, ExpectedGcdCountEvaluator} from 'parser/core/modules/ActionWindow'
@@ -10,7 +10,7 @@ import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
 export class BloodWeapon extends BuffWindow {
 	static override handle = 'bloodweapon'
-	static override title = t('drk.bloodweapon.title')`Blood Weapon Usage`
+	static override title = msg({id: 'drk.bloodweapon.title', message: 'Blood Weapon Usage'})
 	static override displayOrder = DISPLAY_ORDER.BLOOD_WEAPON
 
 	@dependency globalCooldown!: GlobalCooldown

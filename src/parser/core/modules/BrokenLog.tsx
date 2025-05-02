@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import * as Sentry from '@sentry/browser'
 import {Message, Segment} from 'akkd'
 import {NormalisedMessage} from 'components/ui/NormalisedMessage'
@@ -16,7 +16,7 @@ interface Trigger {
 
 export class BrokenLog extends Analyser {
 	static override handle = 'brokenLog'
-	static override title = t('core.broken-log.title')`Broken Log`
+	static override title = msg({id: 'core.broken-log.title', message: 'Broken Log'})
 	static override displayOrder = DISPLAY_ORDER.BROKEN_LOG
 	static override displayMode = DisplayMode.RAW
 
@@ -74,9 +74,11 @@ export class BrokenLog extends Analyser {
 
 		return <Segment>
 			<Message error icon="times circle outline">
-				<Trans id="core.broken-log.broken-log.title" render={<Message.Header/>}>
-					This log is broken.
-				</Trans>
+				<Message.Header>
+					<Trans id="core.broken-log.broken-log.title">
+						This log is broken.
+					</Trans>
+				</Message.Header>
 				<Trans id="core.broken-log.broken-log.description">
 					One or more modules have reported that this log contains inconsistencies that would suggest data is missing or incorrect. While the system does try to maintain sane results in this situation, some statistics may be inaccurate.
 				</Trans>
@@ -85,14 +87,14 @@ export class BrokenLog extends Analyser {
 			<Table basic="very" compact="very">
 				<Table.Header>
 					<Table.Row>
-						<Trans id="core.broken-log.list.module" render={<Table.HeaderCell/>}>Module</Trans>
-						<Trans id="core.broken-log.list.reason" render={<Table.HeaderCell/>}>Reason</Trans>
+						<Table.HeaderCell><Trans id="core.broken-log.list.module">Module</Trans></Table.HeaderCell>
+						<Table.HeaderCell><Trans id="core.broken-log.list.reason">Reason</Trans></Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{Array.from(this.triggers.values()).map(({source, reason}, index) => (
 						<Table.Row key={index}>
-							<Table.Cell><NormalisedMessage message={source.title}/></Table.Cell>
+							<Table.Cell>{source.title != null ? <NormalisedMessage message={source.title}/> : source.handle}</Table.Cell>
 							<Table.Cell>{reason}</Table.Cell>
 						</Table.Row>
 					))}

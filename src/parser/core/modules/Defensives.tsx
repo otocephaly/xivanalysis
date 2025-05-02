@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionKey} from 'data/ACTIONS'
 import {JOBS, RoleKey} from 'data/JOBS'
 import {ReactNode} from 'react'
@@ -16,7 +16,7 @@ const DEFENSIVE_ROLE_ACTIONS: Map<RoleKey, ActionKey[]> = new Map<RoleKey, Actio
 
 export class Defensives extends Utilities {
 	static override handle = 'defensives'
-	static override title = t('core.defensives.title')`Defensives`
+	static override title = msg({id: 'core.defensives.title', message: 'Defensives'})
 	static override displayOrder = DISPLAY_ORDER.DEFENSIVES
 
 	/**

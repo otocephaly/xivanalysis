@@ -1,4 +1,5 @@
-import {NumberFormat, Trans} from '@lingui/react'
+import {i18n} from '@lingui/core'
+import {Trans} from '@lingui/react/macro'
 import {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {ResourceDatum, ResourceMeta} from './ResourceGraphs'
@@ -65,13 +66,10 @@ export function MarkerHandler(props: MarkerHandlerProps) {
 								{
 									tooltipHideMaximum
 										? <Trans id="core.resource-graphs.resource-current">
-											{label}:
-											<NumberFormat value={current}/>
+											{label}: {i18n.number(current)}
 										</Trans>
 										: <Trans id="core.resource-graphs.resource-value">
-											{label}:
-											<NumberFormat value={current}/> /
-											<NumberFormat value={maximum}/>
+											{label}: {i18n.number(current)} / {i18n.number(maximum)}
 										</Trans>
 								}
 							</li>

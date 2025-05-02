@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink, ActionLink} from 'components/ui/DbLink'
 import {NormalisedMessage} from 'components/ui/NormalisedMessage'
 import {Event, Events} from 'event'
@@ -38,7 +38,7 @@ interface ThunderApplicationTracker {
 
 export class Thunder extends Analyser {
 	static override handle = 'thunder'
-	static override title = t('blm.thunder.title')`Thunder`
+	static override title = msg({id: 'blm.thunder.title', message: 'Thunder'})
 	static override displayOrder = DISPLAY_ORDER.THUNDER
 
 	@dependency private actors!: Actors

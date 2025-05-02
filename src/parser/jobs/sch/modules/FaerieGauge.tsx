@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {JOBS} from 'data/JOBS'
@@ -32,7 +32,7 @@ const FAERIE_SUMMONERS: ActionKey[] = [
 
 export class FaerieGauge extends CoreGauge {
 	static override handle = 'faeriegauge'
-	static override title = t('sch.gauge.title')`Faerie Gauge Usage`
+	static override title = msg({id: 'sch.gauge.title', message: 'Faerie Gauge Usage'})
 
 	@dependency private suggestions!: Suggestions
 	// Defaults

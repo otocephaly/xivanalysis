@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import {StatusLink} from 'components/ui/DbLink'
 import {Action} from 'data/ACTIONS'
 import {iconUrl} from 'data/icon'
@@ -65,7 +65,7 @@ const DEFAULT_SEVERITY_TIERS = {
 
 export abstract class Procs extends Analyser {
 	static override handle = 'procs'
-	static override title = t('core.procs.title')`Proc Issues`
+	static override title = msg({id: 'core.procs.title', message: 'Proc Issues'})
 
 	@dependency private downtime!: Downtime
 	@dependency protected suggestions!: Suggestions
@@ -107,7 +107,7 @@ export abstract class Procs extends Analyser {
 	 * Subclassing analysers may override this to toggle off timeline display
 	 */
 	protected showProcTimelineRow: boolean = true
-	protected ProcGroupLabel: ReactNode = <Trans id="core.procs.group.label"> Proc </Trans>
+	protected ProcGroupLabel: ReactNode = <Trans id="core.procs.group.label">Proc</Trans>
 	/**
 	 * Subclassing analysers may override these to toggle on the output display of proc issues, and to control which issue types are shown in the output
 	 */

@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {dependency} from 'parser/core/Injectable'
 import {BuffWindow, ExpectedActionsEvaluator} from 'parser/core/modules/ActionWindow'
@@ -21,7 +21,7 @@ const SEVERITIES = {
 
 export class Delirium extends BuffWindow {
 	static override handle = 'delirium'
-	static override title = t('drk.delirium.title')`Delirium Usage`
+	static override title = msg({id: 'drk.delirium.title', message: 'Delirium Usage'})
 	static override displayOrder = DISPLAY_ORDER.DELIRIUM
 
 	override buffStatus = this.data.statuses.DELIRIUM

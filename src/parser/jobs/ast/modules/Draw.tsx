@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Action} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -29,7 +29,7 @@ const SEVERITIES = {
 
 export class Draw extends Analyser {
 	static override handle = 'draw'
-	static override title = t('ast.draw.title')`Draw`
+	static override title = msg({id: 'ast.draw.title', message: 'Draw'})
 
 	@dependency private data!: Data
 	@dependency private checklist!: Checklist

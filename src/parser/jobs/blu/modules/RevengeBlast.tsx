@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {RotationTable, RotationTableEntry} from 'components/ui/RotationTable'
 import {Event, Events} from 'event'
@@ -50,7 +50,7 @@ interface RevengeBlastWindow {
 
 export class RevengeBlast extends Analyser {
 	static override handle = 'revengeblast'
-	static override title = t('blu.revenge_blast.title')`Revenge Blast Windows`
+	static override title = msg({id: 'blu.revenge_blast.title', message: 'Revenge Blast Windows'})
 	static override displayOrder = DISPLAY_ORDER.REVENGE_BLAST
 
 	@dependency private actors!: Actors

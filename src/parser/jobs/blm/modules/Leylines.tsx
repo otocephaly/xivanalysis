@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
 import {Analyser} from 'parser/core/Analyser'
@@ -24,7 +24,7 @@ interface LeyLinesWindows {
 
 export class Leylines extends Analyser {
 	static override handle = 'leylines'
-	static override title = t('blm.leylines.title')`Ley Lines`
+	static override title = msg({id: 'blm.leylines.title', message: 'Ley Lines'})
 	static override displayOrder = DISPLAY_ORDER.LEY_LINES
 
 	@dependency private data!: Data

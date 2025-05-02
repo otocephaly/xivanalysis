@@ -1,5 +1,6 @@
 import {MessageDescriptor} from '@lingui/core'
-import {t, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Status} from 'data/STATUSES'
@@ -22,7 +23,7 @@ const GCD_HEALS: ActionKey[] = [
 
 export class Zoe extends BuffWindow {
 	static override handle = 'Zoe'
-	static override title: MessageDescriptor = t('sge.zoe.title')`Zoe Actions`
+	static override title: MessageDescriptor = msg({id: 'sge.zoe.title', message: 'Zoe Actions'})
 	static override displayOrder = DISPLAY_ORDER.ZOE
 
 	@dependency private globalCooldown!: GlobalCooldown
