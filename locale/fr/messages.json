@@ -554,7 +554,7 @@
   "drk.darkside.uptime": "Uptime Ténèbres Intérieurs",
   "drk.darkside.uptime.name": "Gardez Ténèbres intérieures actives",
   "drk.darkside.uptime.why": "Ténèbres intérieures sont acquises en utilisant <0/> ou <1/> et vous octroient 10% de dégâts en plus. C'est donc une partie importante du DPS personnel du DRK.  Faites de votre mieux pour garder le buff actif et réactivez-le le plus vite possible sinon.",
-  "drk.delirium.suggestions.gcdactions.content": "Chaque fenêtre de <0/> devrait contenir <1/>, <2/> et <3/>. Utiliser des techniques d'armes de votre combo de base annule l'avancée de votre combo Delirium et occasionne donc une perte de dégâts.",
+  "drk.delirium.suggestions.gcdactions.content": "",
   "drk.delirium.title": "Utilisation de Delirium de sang",
   "drk.gauge.bloodgauge.label": "Jauge de sang",
   "drk.gauge.suggestions.loss.content": "Évitez de laisser votre Jauge de sang se surcharger - les ressources perdues peuvent vous coûter l'utilisation d'une compétence sur la longueur du combat.",
