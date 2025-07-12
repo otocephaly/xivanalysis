@@ -36,7 +36,7 @@
   "ast.draw.checklist.name": "",
   "ast.draw.suggestions.draw-no-usage.content": "完全未使用 <0/> 及 <1/>",
   "ast.draw.suggestions.draw-no-usage.why": "没有使用抽卡",
-  "ast.draw.suggestions.draw-overwrite.content": "",
+  "ast.draw.suggestions.draw-overwrite.content": "在还未使用 <2/> 和 <3/> 时，请尝试避免使用 <0/> / <1/>。",
   "ast.draw.suggestions.draw-overwrite.why": "",
   "ast.draw.suggestions.draw-uses.content": "",
   "ast.draw.suggestions.draw-uses.why": "",
