@@ -7,6 +7,11 @@ export const changelog = [
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
 	{
+		date: new Date('2025-06-30'),
+		Changes: () => <>Potion windows will now expect a combination of two between Bloodspillers or Quietus, not just two Bloodspillers.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
 		date: new Date('2025-06-03'),
 		Changes: () => <>Corrected Shadowstride icon.</>,
 		contributors: [CONTRIBUTORS.VIOLET],
