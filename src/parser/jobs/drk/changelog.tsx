@@ -7,6 +7,11 @@ export const changelog = [
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
 	{
+		date: new Date('2025-08-30'),
+		Changes: () => <>Display Edge and Flood of Darkness, as well as lower level Esteem actions, on the timeline for level synced content.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU],
+	},
+	{
 		date: new Date('2025-06-30'),
 		Changes: () => <>Potion windows will now expect a combination of two between Bloodspillers or Quietus, not just two Bloodspillers.</>,
 		contributors: [CONTRIBUTORS.VIOLET],
