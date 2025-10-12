@@ -1,6 +1,7 @@
 import {ActionTimeline} from './ActionTimeline'
 import {BloodGauge} from './BloodGauge'
 //import {BloodWeapon} from './BloodWeapon'
+import {DarkArtsLost} from './DarkArtsLost'
 import {Darkside} from './Darkside'
 import {Defensives} from './Defensives'
 import {Delirium} from './Delirium'
@@ -25,5 +26,6 @@ export const modules = [
 	OGCDDowntime,
 	SaltAndDarkness,
 	StatusTimeline,
+	DarkArtsLost,
 	Tincture,
 ]
