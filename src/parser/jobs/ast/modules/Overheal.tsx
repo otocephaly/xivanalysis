@@ -1,7 +1,6 @@
 import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Action} from 'data/ACTIONS'
-import {Status} from 'data/STATUSES'
 import {Events} from 'event'
 import {Overheal as CoreOverheal, TrackedOverhealOpts} from 'parser/core/modules/Overheal'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
@@ -10,12 +9,6 @@ const NEUTRAL_SECT_APPLICATION_BUCKET_ID = 1
 
 export class Overheal extends CoreOverheal {
 	protected override checklistDisplayOrder = DISPLAY_ORDER.OVERHEAL_CHECKLIST
-
-	private ignoredStatuses: Array<Status['id']> = [
-		//collective unconscious applies wheel of fortune during ticks when party member is within bubble so this specific status can be ignored
-		//note: there is a mit portion that isn't included in overhealing, but is tracked in a separate ID
-		this.data.statuses.COLLECTIVE_UNCONSCIOUS.id,
-	]
 
 	private readonly shieldGCDIds: Array<Action['id']> = [
 		this.data.actions.ASPECTED_BENEFIC.id,
@@ -94,13 +87,18 @@ export class Overheal extends CoreOverheal {
 				this.data.statuses.OPPOSITION.id,
 			],
 		},
+		{
+			name: 'Collective Unconscious (non-heal non-mit)',
+			trackedHealIds: [
+				this.data.statuses.COLLECTIVE_UNCONSCIOUS.id,
+			],
+			//collective unconscious applies wheel of fortune during ticks when party member is within bubble so this specific status can be ignored
+			//note: there is a mit portion that isn't included in overhealing, but is tracked in a separate ID
+			ignore: true,
+		},
 	]
 
 	protected override considerHeal(event: Events['heal'], pet?: boolean): boolean {
-		//ignore if these specific statuses
-		if (event.cause.type ==='status' && this.ignoredStatuses.includes(event.cause.status)) {
-			return false
-		}
 
 		// Default consideration for heals from actions and pet effects (ie. Star)
 		if (event.cause.type === 'action' || pet) { return true }
