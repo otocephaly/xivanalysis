@@ -99,7 +99,6 @@ export class Overheal extends CoreOverheal {
 	]
 
 	protected override considerHeal(event: Events['heal'], pet?: boolean): boolean {
-
 		// Default consideration for heals from actions and pet effects (ie. Star)
 		if (event.cause.type === 'action' || pet) { return true }
 
