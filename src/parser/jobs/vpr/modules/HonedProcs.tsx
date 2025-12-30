@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {DataLink, StatusLink} from 'components/ui/DbLink'
 import {Status} from 'data/STATUSES'
 import {dependency} from 'parser/core/Injectable'
@@ -22,9 +22,9 @@ const SEVERITIES = {
 const HONED_PROC_LOST_POTENCY = 100 // Aoes are only 20 potency... do I account for them?
 export class HonedProcs extends CoreProcs {
 	static override handle = 'honedprocs'
-	static override title = t('vpr.honedprocs.title')`Honed Procs`
+	static override title = msg({id: 'vpr.honedprocs.title', message: 'Honed Procs'})
 
-	override ProcGroupLabel = <Trans id="vpr.HonedProcs.group.label"> Honed Procs </Trans>
+	override ProcGroupLabel = <Trans id="vpr.HonedProcs.group.label">Honed Procs</Trans>
 
 	@dependency private checklist!: Checklist
 	override trackedProcs = [
@@ -68,7 +68,7 @@ export class HonedProcs extends CoreProcs {
 			</Trans>,
 			tiers: SEVERITIES.DROPPED,
 			value: DroppedHoneds,
-			why: <Trans id="vpr.honedprocs.suggestions.drops.why"> {DroppedHoneds * HONED_PROC_LOST_POTENCY} potency lost to dropped procs.</Trans>,
+			why: <Trans id="vpr.honedprocs.suggestions.drops.why">{DroppedHoneds * HONED_PROC_LOST_POTENCY} potency lost to dropped procs.</Trans>,
 		}))
 
 		this.suggestions.add(new TieredSuggestion({
@@ -78,7 +78,7 @@ export class HonedProcs extends CoreProcs {
 			</Trans>,
 			tiers: SEVERITIES.OVERWRITTEN,
 			value: OverwroteHoneds,
-			why: <Trans id="vpr.honedprocs.suggestions.overwrites.why"> {OverwroteHoneds * HONED_PROC_LOST_POTENCY} potency lost to overwrote procs.</Trans>,
+			why: <Trans id="vpr.honedprocs.suggestions.overwrites.why">{OverwroteHoneds * HONED_PROC_LOST_POTENCY} potency lost to overwrote procs.</Trans>,
 		}))
 	}
 

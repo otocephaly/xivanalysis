@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {Action} from 'data/ACTIONS'
 import {Cause, Event, Events} from 'event'
@@ -46,7 +46,7 @@ interface SeverityTiers {
  */
 export abstract class AoEUsages extends Analyser {
 	static override handle = 'aoeusages'
-	static override title = t('core.aoeusages.title')`Incorrect AoE Action Usage`
+	static override title = msg({id: 'core.aoeusages.title', message: 'Incorrect AoE Action Usage'})
 
 	@dependency private suggestions!: Suggestions
 	@dependency protected data!: Data

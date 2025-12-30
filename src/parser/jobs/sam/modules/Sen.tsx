@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import Color from 'color'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {RotationTable} from 'components/ui/RotationTable'
@@ -22,16 +22,16 @@ import {Kenki} from './Kenki'
 
 // defining a const message to assign later via markdown
 
-const samWarningMessage = t('sam.sen.rotation-table.disclaimer')` This module labels a "Standard Sen Window" to be a window that with no Sen overwrites that ends on an Iaijutsu. Please consult The Balance Discord and this [Infograph](https://i.imgur.com/C0ryA5F) for more details on looping Samurai gameplay.`
+const samWarningMessage = msg({id: 'sam.sen.rotation-table.disclaimer', message: 'This module labels a "Standard Sen Window" to be a window that with no Sen overwrites that ends on an Iaijutsu. Please consult The Balance Discord and this [Infograph](https://i.imgur.com/C0ryA5F) for more details on looping Samurai gameplay.'})
 
 const KENKI_PER_SEN = 10
 
 const SEN_HANDLING = {
-	NONE: {priority: 0, message: <> No errors </>},
-	HAGAKURE: {priority: 10, message: <Trans id = "sam.sen.sen_handling.hagakure"> Contains a Hagakure. </Trans>},
-	OVERWROTE_SEN: {priority: 20, message: <Trans id = "sam.sen.sen_handling.overwrote_sen"> Contains a Overwritten Sen. </Trans>},
-	OVERWROTE_SENS: {priority: 25, message: <Trans id = "sam.sen.sen_handling.overwrote_sens"> Contains Overwritten Sens. </Trans>},
-	DEATH: {priority: 30, message: <Trans id = "sam.sen.sen_handling.death"> Contains your death. </Trans>}, // BET YOU WISH YOU USED THIRD EYE NOW RED!
+	NONE: {priority: 0, message: <>No errors</>},
+	HAGAKURE: {priority: 10, message: <Trans id="sam.sen.sen_handling.hagakure">Contains a Hagakure.</Trans>},
+	OVERWROTE_SEN: {priority: 20, message: <Trans id="sam.sen.sen_handling.overwrote_sen">Contains a Overwritten Sen.</Trans>},
+	OVERWROTE_SENS: {priority: 25, message: <Trans id="sam.sen.sen_handling.overwrote_sens">Contains Overwritten Sens.</Trans>},
+	DEATH: {priority: 30, message: <Trans id="sam.sen.sen_handling.death">Contains your death.</Trans>}, // BET YOU WISH YOU USED THIRD EYE NOW RED!
 }
 
 const SETSU_VALUE = 'setsu'
@@ -99,7 +99,7 @@ class SenState {
 export class Sen extends Analyser {
 	static override displayOrder = DISPLAY_ORDER.SEN
 	static override handle = 'sen'
-	static override title = t('sam.sen.title')`Non-Standard Sen Windows`
+	static override title = msg({id: 'sam.sen.title', message: 'Non-Standard Sen Windows'})
 
 	@dependency private data!: Data
 	@dependency private suggestions!: Suggestions
@@ -382,7 +382,7 @@ export class Sen extends Analyser {
 		if (this.nonStandardCount !== 0) {
 			return <Fragment>
 				<Message>
-					<Trans id="sam.sen.rotation-table.message"> This table serves as a way to better see the events that lend up to a Sen window that has been deemed "Non-Standard" as explained below. Dying, overwriting a sen, or using hagakure will cause a window to be flagged as Non-Standard.
+					<Trans id="sam.sen.rotation-table.message">This table serves as a way to better see the events that lend up to a Sen window that has been deemed "Non-Standard" as explained below. Dying, overwriting a sen, or using hagakure will cause a window to be flagged as Non-Standard.
 					</Trans>
 				</Message>
 
@@ -409,7 +409,7 @@ export class Sen extends Analyser {
 					]}
 					notes={[
 						{
-							header: <Trans id = "sam.sen.sen_handling.why"> Why Non-Standard </Trans>,
+							header: <Trans id = "sam.sen.sen_handling.why">Why Non-Standard</Trans>,
 							accessor: 'reason',
 						},
 					]}

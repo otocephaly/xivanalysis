@@ -146,7 +146,7 @@ export const DRK = ensureActions({
 	SHADOWSTRIDE: {
 		id: 36926,
 		name: 'Shadowstride',
-		icon: iconUrl(3061),
+		icon: iconUrl(3093),
 		cooldown: 30000,
 		charges: 2,
 	},
@@ -180,7 +180,7 @@ export const DRK = ensureActions({
 		speedAttribute: Attribute.SKILL_SPEED,
 		breaksCombo: false,
 		potencies: [{
-			value: 600,
+			value: 580,
 			bonusModifiers: [],
 		}],
 	},
@@ -210,6 +210,12 @@ export const DRK = ensureActions({
 		cooldown: 15000,
 		statusesApplied: ['BLACKEST_NIGHT'],
 	},
+	FLOOD_OF_DARKNESS: {
+		id: 16466,
+		name: 'Flood of Darkness',
+		icon: iconUrl(3082),
+		cooldown: 1000,
+	},
 	FLOOD_OF_SHADOW: {
 		id: 16469,
 		name: 'Flood of Shadow',
@@ -219,6 +225,12 @@ export const DRK = ensureActions({
 			value: 100,
 			bonusModifiers: [],
 		}],
+	},
+	EDGE_OF_DARKNESS: {
+		id: 16467,
+		name: 'Edge of Darkness',
+		icon: iconUrl(3083),
+		cooldown: 1000,
 	},
 	EDGE_OF_SHADOW: {
 		id: 16470,
@@ -284,7 +296,7 @@ export const DRK = ensureActions({
 		speedAttribute: Attribute.SKILL_SPEED,
 		breaksCombo: false,
 		potencies: [{
-			value: 620,
+			value: 600,
 			bonusModifiers: [],
 		}],
 	},
@@ -296,7 +308,7 @@ export const DRK = ensureActions({
 		speedAttribute: Attribute.SKILL_SPEED,
 		breaksCombo: false,
 		potencies: [{
-			value: 720,
+			value: 700,
 			bonusModifiers: [],
 		}],
 	},
@@ -308,7 +320,7 @@ export const DRK = ensureActions({
 		speedAttribute: Attribute.SKILL_SPEED,
 		breaksCombo: false,
 		potencies: [{
-			value: 820,
+			value: 800,
 			bonusModifiers: [],
 		}],
 	},
@@ -355,7 +367,7 @@ export const DRK = ensureActions({
 	ESTEEM_SHADOWSTRIDE: {
 		id: 38512,
 		name: 'Shadowstride',
-		icon: iconUrl(3061),
+		icon: iconUrl(3093),
 	},
 	ESTEEM_SHADOWBRINGER: {
 		id: 25881,
@@ -366,5 +378,15 @@ export const DRK = ensureActions({
 		id: 36933,
 		name: 'Disesteem',
 		icon: iconUrl(3099),
+	},
+	ESTEEM_CARVE_AND_SPIT: {
+		id: 17915,
+		name: 'Carve and Spit',
+		icon: iconUrl(3058),
+	},
+	ESTEEM_FLOOD_OF_SHADOW: {
+		id: 17907,
+		name: 'Flood of Shadow',
+		icon: iconUrl(3085),
 	},
 })

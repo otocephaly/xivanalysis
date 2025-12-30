@@ -10,6 +10,8 @@ export interface Encounter {
 // instructions on how to find encounter IDs for each report source.
 export const ENCOUNTERS = ensureRecord<Encounter>()({
 	TRASH: {ids: {legacyFflogs: '0'}},
+	DSR: {ids: {legacyFflogs: '1076'}},
+	EX_TRAIN: {ids: {legacyFflogs: '1083'}},
 	FRU: {ids: {legacyFflogs: '1079'}},
 })
 

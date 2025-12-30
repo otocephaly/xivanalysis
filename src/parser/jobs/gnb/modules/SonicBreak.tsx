@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
 import _ from 'lodash'
@@ -13,7 +13,8 @@ import {DISPLAY_ORDER} from 'parser/jobs/gnb/modules/DISPLAY_ORDER'
 import {Fragment} from 'react'
 import {Button, Message, Table} from 'semantic-ui-react'
 
-const MAX_TICKS = 10  // Sonic Break is 30s
+const MAX_TICKS_PRE_7_4 = 10
+const MAX_TICKS_POST_7_4 = 5
 
 class SonicBreakApplication {
 	start: number
@@ -29,7 +30,7 @@ class SonicBreakApplication {
 
 export class SonicBreak extends Analyser {
 	static override handle = 'Sonic Break'
-	static override title = t('gnb.sonic-break.title')`Sonic Break`
+	static override title = msg({id: 'gnb.sonic-break.title', message: 'Sonic Break'})
 	static override displayOrder = DISPLAY_ORDER.SONIC_BREAK
 
 	@dependency private data!: Data
@@ -37,12 +38,16 @@ export class SonicBreak extends Analyser {
 	@dependency private timeline!: Timeline
 
 	private SonicBreakApplications: SonicBreakApplication[] = []
+	private MaxTicks: number = MAX_TICKS_PRE_7_4
 
 	private get lastSonicBreakApplication(): SonicBreakApplication | undefined {
 		return _.last(this.SonicBreakApplications)
 	}
 
 	override initialise() {
+
+		this.MaxTicks = this.parser.patch.before('7.4') ? MAX_TICKS_PRE_7_4 : MAX_TICKS_POST_7_4
+
 		const playerFilter = filter<Event>().source(this.parser.actor.id)
 		this.addEventHook(playerFilter.type('statusApply').status(this.data.statuses.SONIC_BREAK.id), this.onDotApply)
 		this.addEventHook(playerFilter.type('damage'), this.onDotDamage)
@@ -100,18 +105,18 @@ export class SonicBreak extends Analyser {
 
 			lastSonicBreak.end = event.timestamp
 
-			lastSonicBreak.isMissingTicks = lastSonicBreak.totalTicks < MAX_TICKS
+			lastSonicBreak.isMissingTicks = lastSonicBreak.totalTicks < this.MaxTicks
 		}
 	}
 
 	private onComplete() {
 		const badSonicBreaks = this.SonicBreakApplications.filter(sonicBreak => sonicBreak.isMissingTicks)
 		if (badSonicBreaks.length > 0) {
-			const missedTicks = badSonicBreaks.reduce((acc, val) => acc + (MAX_TICKS - val.totalTicks), 0)
+			const missedTicks = badSonicBreaks.reduce((acc, val) => acc + (this.MaxTicks - val.totalTicks), 0)
 			this.suggestions.add(new TieredSuggestion({
 				icon: this.data.actions.SONIC_BREAK.icon,
 				content: <Trans id="gnb.sonic-break.suggestions.missing-ticks.content">
-					One or more of your <DataLink action = "SONIC_BREAK"/> DoTs had ticks that did not deal damage. </Trans>,
+					One or more of your <DataLink action = "SONIC_BREAK"/>DoTs had ticks that did not deal damage.</Trans>,
 				tiers: {
 					1: SEVERITY.MINOR,
 					5: SEVERITY.MEDIUM,
@@ -119,7 +124,7 @@ export class SonicBreak extends Analyser {
 
 				},
 				value: missedTicks,
-				why: <Trans id = "gnb.sonic-break.suggestions.missing-ticks.why"> You wasted <Plural value= {missedTicks} one="# tick" other="# ticks"/> of <DataLink action = "SONIC_BREAK"/> </Trans>,
+				why: <Trans id = "gnb.sonic-break.suggestions.missing-ticks.why">You wasted <Plural value= {missedTicks} one="# tick" other="# ticks"/> of <DataLink action = "SONIC_BREAK"/></Trans>,
 			},
 			))
 		}
@@ -144,7 +149,7 @@ export class SonicBreak extends Analyser {
 						<Table.Cell>{this.parser.formatEpochTimestamp(window.start)}</Table.Cell>
 						<Table.Cell>
 							<Trans id="sonic-break.tick-issue">
-								<DataLink action = "SONIC_BREAK"/> had <Plural value={MAX_TICKS - window.totalTicks} one="# tick" other="# ticks"/> deal no damage.
+								<DataLink action = "SONIC_BREAK"/> had <Plural value={this.MaxTicks - window.totalTicks} one="# tick" other="# ticks"/> deal no damage.
 							</Trans>
 						</Table.Cell>
 						<Table.Cell>
@@ -164,7 +169,7 @@ export class SonicBreak extends Analyser {
 		return <Fragment>
 			<Message>
 				<Trans id="gnb.sonic-break.accordion.message">
-					<DataLink action = "SONIC_BREAK"/> is a {this.data.statuses.SONIC_BREAK.duration / 1000} second DoT that should tick <Plural value={MAX_TICKS} one = "# time" other="# times"/> for damage, if you are finding that the target is going invulnerable, consider moving it forward in your <DataLink action = "NO_MERCY"/> windows.
+					<DataLink action = "SONIC_BREAK"/> is a {this.data.statuses.SONIC_BREAK.duration / 1000} second DoT that should tick <Plural value={this.MaxTicks} one = "# time" other="# times"/> for damage, if you are finding that the target is going invulnerable, consider moving it forward in your <DataLink action = "NO_MERCY"/> windows.
 				</Trans>
 			</Message>
 			{tickTable}

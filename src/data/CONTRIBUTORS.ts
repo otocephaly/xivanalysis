@@ -1,5 +1,5 @@
 import {MessageDescriptor} from '@lingui/core'
-import {t} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {ensureRecord} from 'utilities'
 import {Job, JOBS} from './JOBS'
 
@@ -162,6 +162,19 @@ export const CONTRIBUTORS = ensureRecord<Contributor>()({
 			JOBS.ASTROLOGIAN,
 		],
 	},
+	VIOLET: {
+		name: 'Violet Stardust',
+		avatar: require('./avatar/violet.png'),
+		jobs: [
+			JOBS.DARK_KNIGHT,
+		],
+	},
+	SHANZHE: {
+		name: 'Shanzhe',
+		jobs: [
+			JOBS.PICTOMANCER,
+		],
+	},
 })
 
 export interface Role {
@@ -170,9 +183,9 @@ export interface Role {
 
 export const ROLES = ensureRecord<Role>()({
 	THEORYCRAFT: {
-		text: t('core.role.theorycraft')`Theorycraft`,
+		text: msg({id: 'core.role.theorycraft', message: 'Theorycraft'}),
 	},
 	DEVELOPER: {
-		text: t('core.role.developer')`Developer`,
+		text: msg({id: 'core.role.developer', message: 'Developer'}),
 	},
 })

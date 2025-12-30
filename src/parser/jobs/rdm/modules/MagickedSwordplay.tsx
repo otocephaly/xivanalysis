@@ -1,5 +1,5 @@
-import {t, Trans} from '@lingui/macro'
-import {Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Procs} from 'parser/core/modules/Procs'
 import {DISPLAY_ORDER} from 'parser/jobs/rdm/modules/DISPLAY_ORDER'
@@ -9,15 +9,18 @@ import {DISPLAY_ORDER} from 'parser/jobs/rdm/modules/DISPLAY_ORDER'
 export class MagickedSwordplay extends Procs {
 	static override displayOrder = DISPLAY_ORDER.MAGICKED_SWORDPLAY
 	static override handle = 'MagickedSwordplay'
-	static override title = t('rdm.ms.title')`Magicked Swordplay Windows`
+	static override title = msg({id: 'rdm.ms.title', message: 'Magicked Swordplay Windows'})
 
 	override trackedProcs = [
 		{
 			procStatus: this.data.statuses.MAGICKED_SWORDPLAY,
 			consumeActions: [
 				this.data.actions.ENCHANTED_RIPOSTE,
+				this.data.actions.MANAFICATION_ENCHANTED_RIPOSTE,
 				this.data.actions.ENCHANTED_ZWERCHHAU,
+				this.data.actions.MANAFICATION_ENCHANTED_ZWERCHHAU,
 				this.data.actions.ENCHANTED_REDOUBLEMENT,
+				this.data.actions.MANAFICATION_ENCHANTED_REDOUBLEMENT,
 				this.data.actions.ENCHANTED_MOULINET,
 				this.data.actions.ENCHANTED_MOULINET_DEUX,
 				this.data.actions.ENCHANTED_MOULINET_TROIS,

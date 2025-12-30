@@ -1,8 +1,8 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {Defensives as CoreDefensives} from 'parser/core/modules/Defensives'
 
 export class Defensives extends CoreDefensives {
-	protected override trackedDefensives = [
+	protected override trackedActions = [
 		this.data.actions.SCH_WHISPERING_DAWN,
 		this.data.actions.SCH_FEY_ILLUMINATION,
 		this.data.actions.RECITATION,

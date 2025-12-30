@@ -1,4 +1,5 @@
-import {t, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink, StatusLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {dependency} from 'parser/core/Injectable'
@@ -11,8 +12,11 @@ import {DISPLAY_ORDER} from 'parser/jobs/rdm/modules/DISPLAY_ORDER'
 
 const ONLY_SHOW: ActionKey[] = [
 	'ENCHANTED_RIPOSTE',
+	'MANAFICATION_ENCHANTED_RIPOSTE',
 	'ENCHANTED_ZWERCHHAU',
+	'MANAFICATION_ENCHANTED_ZWERCHHAU',
 	'ENCHANTED_REDOUBLEMENT',
+	'MANAFICATION_ENCHANTED_REDOUBLEMENT',
 	'ENCHANTED_MOULINET',
 	'ENCHANTED_MOULINET_DEUX',
 	'ENCHANTED_MOULINET_TROIS',
@@ -39,7 +43,7 @@ const MANAFICATION_GCDS = 6
 export class Manafication extends BuffWindow {
 	static override displayOrder = DISPLAY_ORDER.MANAFICATION
 	static override handle = 'Manafication'
-	static override title = t('rdm.manafication.title')`Manafication Windows`
+	static override title = msg({id: 'rdm.manafication.title', message: 'Manafication Windows'})
 
 	@dependency globalCooldown!: GlobalCooldown
 
@@ -74,8 +78,11 @@ export class Manafication extends BuffWindow {
 				allowedGcds: [
 					// Single Target
 					this.data.actions.ENCHANTED_RIPOSTE.id,
+					this.data.actions.MANAFICATION_ENCHANTED_RIPOSTE.id,
 					this.data.actions.ENCHANTED_ZWERCHHAU.id,
+					this.data.actions.MANAFICATION_ENCHANTED_ZWERCHHAU.id,
 					this.data.actions.ENCHANTED_REDOUBLEMENT.id,
+					this.data.actions.MANAFICATION_ENCHANTED_REDOUBLEMENT.id,
 
 					// AoE
 					this.data.actions.ENCHANTED_MOULINET.id,

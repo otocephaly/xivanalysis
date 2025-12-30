@@ -1,4 +1,5 @@
-import {t, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {dependency} from 'parser/core/Injectable'
@@ -31,7 +32,7 @@ const SAM_BASE_GCD_SPEED_BUFFED = 2180
 export class Meikyo extends BuffWindow {
 	static override displayOrder = DISPLAY_ORDER.MEIKYO
 	static override handle = 'Meikyo'
-	static override title = t('sam.ms.title')`Meikyo Shisui Windows`
+	static override title = msg({id: 'sam.ms.title', message: 'Meikyo Shisui Windows'})
 
 	@dependency globalCooldown!: GlobalCooldown
 

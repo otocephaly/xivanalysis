@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {CONTRIBUTORS, ROLES} from 'data/CONTRIBUTORS'
 import {Meta} from 'parser/core/Meta'
 import {changelog} from './changelog'
@@ -16,7 +16,7 @@ export const REAPER = new Meta({
 
 	supportedPatches: {
 		from: '7.0',
-		to: '7.2',
+		to: '7.4',
 	},
 
 	contributors: [

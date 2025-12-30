@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {ACTIONS} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -12,7 +12,7 @@ import {Suggestions, SEVERITY, Suggestion} from 'parser/core/modules/Suggestions
 
 export class Physick extends Analyser {
 	static override handle = 'physick'
-	static override title = t('smn.physick.title')`Physick`
+	static override title = msg({id: 'smn.physick.title', message: 'Physick'})
 
 	@dependency private data!: Data
 	@dependency private downtime!: Downtime

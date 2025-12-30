@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {EvaluatedAction, ExpectedActionGroupsEvaluator, TrackedActionGroup} from 'parser/core/modules/ActionWindow'
 import {HistoryEntry} from 'parser/core/modules/ActionWindow/History'
@@ -28,7 +28,7 @@ export class Tincture extends CoreTincture {
 					overrideHeader: <DataLink showName={false} action="DELIRIUM" />,
 				},
 				{
-					actions: [this.data.actions.BLOODSPILLER],
+					actions: [this.data.actions.BLOODSPILLER, this.data.actions.QUIETUS],
 					expectedPerWindow: 2,
 				},
 				{

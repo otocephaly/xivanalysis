@@ -10,6 +10,7 @@ import {Pets} from './Pets'
 import {Procs} from './Procs'
 import {Swiftcast} from './Swiftcast'
 import {Tincture} from './Tincture'
+import {Utilities} from './Utilities'
 
 export const modules = [
 	Aetherflow,
@@ -24,4 +25,5 @@ export const modules = [
 	Pets,
 	Swiftcast,
 	Tincture,
+	Utilities,
 ]

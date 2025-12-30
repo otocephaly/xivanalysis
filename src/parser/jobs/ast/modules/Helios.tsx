@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Event} from 'event'
 import {Analyser} from 'parser/core/Analyser'
@@ -22,7 +22,7 @@ const SEVERITIES = {
 
 export class Helios extends Analyser {
 	static override handle = 'horoscope'
-	static override title = t('ast.horoscope.title')`Horoscope`
+	static override title = msg({id: 'ast.horoscope.title', message: 'Horoscope'})
 
 	@dependency private data!: Data
 	@dependency private cooldowns!: Cooldowns

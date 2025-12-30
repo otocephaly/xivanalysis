@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ExpectedActionsEvaluator} from 'parser/core/modules/ActionWindow'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
@@ -17,7 +17,7 @@ export class Tincture extends CoreTincture {
 				},
 				{
 					action: this.data.actions.GNASHING_FANG,
-					expectedPerWindow: 1,
+					expectedPerWindow: 2,
 				},
 				{
 					action: this.data.actions.DOUBLE_DOWN,

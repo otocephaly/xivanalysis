@@ -6,6 +6,67 @@ export const changelog = [
 	// 	Changes: () => <>The changes you made</>,
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
+	//
+	{
+		date: new Date('2025-12-29'),
+		Changes: () => <>Fixed bug related to missed Dark Arts being incorrectly logged with multiple Dark Knights in the party.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-12-20'),
+		Changes: () => <>Patch 7.4 bump, minor bug fix related to Esteem evaluator, and severities adjusted.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-12-11'),
+		Changes: () => <>Living Shadow used prepull now counts towards usage for cooldown evaluation, and is shown in the Esteem evaluator.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-12-11'),
+		Changes: () => <>Made Living Shadow evaluator clearer as to which uses were full damage and which weren't.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-12-05'),
+		Changes: () => <>Fixed minor issue where Living Shadow usages would be marked as having lost potency when only equivalent actions were replaced by Abyssal Drain.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-09-15'),
+		Changes: () => <>Included timestamps and information about missed Dark Arts uses.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-09-14'),
+		Changes: () => <>Added module to display Esteem's actions, as well as warning when it is interrupted in some way.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-08-30'),
+		Changes: () => <>Display Edge and Flood of Darkness, as well as lower level Esteem actions, on the timeline for level synced content.</>,
+		contributors: [CONTRIBUTORS.AKAIRYU],
+	},
+	{
+		date: new Date('2025-06-30'),
+		Changes: () => <>Potion windows will now expect a combination of two between Bloodspillers or Quietus, not just two Bloodspillers.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-06-03'),
+		Changes: () => <>Corrected Shadowstride icon.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-06-03'),
+		Changes: () => <>Fixed Delirium single target count adjustments being in the wrong order when using Impalement, and double-counting missed Delirium actions.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
+	{
+		date: new Date('2025-05-23'),
+		Changes: () => <>Corrected reporting of Delirium windows that involve Impalement.</>,
+		contributors: [CONTRIBUTORS.VIOLET],
+	},
 	{
 		date: new Date('2024-08-02'),
 		Changes: () => <>Fixed Bloodspiller adjustment for expected uses during a potion window in the opener</>,

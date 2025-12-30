@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -29,14 +29,13 @@ const SEVERITY_THE_BLACKEST_NIGHT = {
 }
 
 const SEVERITY_WASTED_MP_ACTIONS = {
-	1: SEVERITY.MINOR,
-	2: SEVERITY.MEDIUM,
-	5: SEVERITY.MAJOR,
+	1: SEVERITY.MEDIUM,
+	2: SEVERITY.MAJOR,
 }
 
 export class MPUsage extends Analyser {
 	static override handle = 'resourceanalyzer'
-	static override title = t('drk.resourceanalyzer.title')`Resource Analyzer`
+	static override title = msg({id: 'drk.resourceanalyzer.title', message: 'Resource Analyzer'})
 	static override displayOrder = DISPLAY_ORDER.RESOURCES
 
 	@dependency private actors!: Actors
@@ -95,7 +94,13 @@ export class MPUsage extends Analyser {
 		this.addEventHook(playerFilter.type('statusApply').status(this.data.statuses.DELIRIUM.id), this.onApplyDelirium)
 		this.addEventHook(playerFilter.type('statusRemove').status(this.data.statuses.DELIRIUM.id), this.onRemoveDelirium)
 
+		// Note: This approach misses the following chances to lose a Dark Arts:
+		// 1. You press TBN, and then a secondary Dark Knight uses TBN on the same target
+		// 2. You press TBN on another player, and that player's TBN does not pop (death/expiry/a second dark Knight using TBN on them/etc)
+		// For #1, it doesn't seem reasonable to mark it 'against' the player, and for #2, there are
+		// enough edge cases for minimal value that it seems fine to leave that for a future exercise.
 		this.addEventHook(playerFilter.type('statusRemove').status(this.data.statuses.BLACKEST_NIGHT.id), this.onRemoveBlackestNight)
+
 		this.addEventHook(playerFilter.type('action').action(this.data.matchActionId(DARK_ARTS_SPENDERS)), () => this.darkArts = false)
 
 		this.addEventHook('complete', this.onComplete)
@@ -178,7 +183,7 @@ export class MPUsage extends Analyser {
 	}
 
 	private onComplete() {
-		const wastedDarkArts = this.droppedTBNs + this.overwriteDarkArts
+		const wastedDarkArts =  this.droppedTBNs + this.overwriteDarkArts
 		this.suggestions.add(new TieredSuggestion({
 			icon: this.data.actions.THE_BLACKEST_NIGHT.icon,
 			content: <Trans id="drk.resourceanalyzer.blackestnight.content">

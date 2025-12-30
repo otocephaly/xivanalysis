@@ -1,10 +1,12 @@
 import {ActionTimeline} from './ActionTimeline'
 import {BloodGauge} from './BloodGauge'
 //import {BloodWeapon} from './BloodWeapon'
+import {DarkArtsLost} from './DarkArtsLost'
 import {Darkside} from './Darkside'
 import {Defensives} from './Defensives'
 import {Delirium} from './Delirium'
 import {EsteemTimeline} from './EsteemTimeline'
+import {EsteemWindow} from './EsteemWindow'
 import {MPUsage} from './MPUsage'
 import {MultiHitSkills} from './MultiHitSkills'
 import {OGCDDowntime} from './OGCDDowntime'
@@ -25,5 +27,7 @@ export const modules = [
 	OGCDDowntime,
 	SaltAndDarkness,
 	StatusTimeline,
+	DarkArtsLost,
 	Tincture,
+	EsteemWindow,
 ]

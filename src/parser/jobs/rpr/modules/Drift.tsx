@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -32,7 +32,7 @@ class DriftWindow {
 export class Drift extends Analyser {
 	static override debug = false
 	static override handle = 'drift'
-	static override title = t('rpr.drift.title')`Gluttony Drift`
+	static override title = msg({id: 'rpr.drift.title', message: 'Gluttony Drift'})
 	static override displayOrder = DISPLAY_ORDER.DRIFT
 
 	@dependency private downtime!: Downtime
@@ -134,7 +134,7 @@ export class Drift extends Analyser {
 
 		return <Fragment>
 			<Message info>
-				<Trans id="rpr.drift.prepend-message"> <ActionLink action="GLUTTONY"/>'s drift between uses should be less than 3 seconds except at the 2 minute mark, where it may be delayed 15 to 20 seconds due to 2 minute burst not having room for its cast. </Trans>
+				<Trans id="rpr.drift.prepend-message"><ActionLink action="GLUTTONY"/>'s drift between uses should be less than 3 seconds except at the 2 minute mark, where it may be delayed 15 to 20 seconds due to 2 minute burst not having room for its cast.</Trans>
 			</Message>
 			<Table style={{border: 'none'}}>
 				<Table.Body>

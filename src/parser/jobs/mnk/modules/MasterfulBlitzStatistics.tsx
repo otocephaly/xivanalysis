@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {Event} from 'event'
 import {Analyser} from 'parser/core/Analyser'
@@ -16,7 +16,7 @@ interface TrackedAction {
 
 export class MasterfulBlitzStatistics extends Analyser {
 	static override handle = 'mbstats'
-	static override title = t('mnk.mbstats.title')`Masterful Blitz`
+	static override title = msg({id: 'mnk.mbstats.title', message: 'Masterful Blitz'})
 
 	@dependency private data!: Data
 	@dependency private statistics!: Statistics

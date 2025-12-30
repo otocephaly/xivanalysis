@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {Rotation} from 'components/ui/Rotation'
 import {BASE_GCD} from 'data/CONSTANTS'
@@ -27,7 +27,7 @@ const SEVERITY_WASTED_DUALCAST = {
 
 export class DualCast extends Analyser {
 	static override handle = 'dualCast'
-	static override title = t('rdm.dualcast.title')`Dualcast`
+	static override title = msg({id: 'rdm.dualcast.title', message: 'Dualcast'})
 	static override displayOrder = DISPLAY_ORDER.DUALCAST
 
 	@dependency private data!: Data

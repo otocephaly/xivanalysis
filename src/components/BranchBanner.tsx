@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {Segment} from 'akkd'
 import {PATCHES, getPatch} from 'data/PATCHES'
 import {observer} from 'mobx-react'
@@ -33,9 +33,11 @@ export const BranchBanner = observer(function BranchBanner({report}: BranchBanne
 				className={styles.container}
 			>
 				<div className={styles.text}>
-					<Trans id="core.branch-banner.header" render={<Header/>}>
-						This report is from a different expansion!
-					</Trans>
+					<Header>
+						<Trans id="core.branch-banner.header">
+							This report is from a different expansion!
+						</Trans>
+					</Header>
 					<Trans id="core.branch-banner.description">
 						This version of xivanalysis cannot provide meaningful analysis for reports that were logged during {patchKey}. Please click here to analyse this log using the {patchKey} version of the site.
 					</Trans>

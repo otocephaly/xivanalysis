@@ -1,10 +1,10 @@
-import {t} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {TransMarkdown} from 'components/ui/TransMarkdown'
 import {CONTRIBUTORS, ROLES} from 'data/CONTRIBUTORS'
 import {Meta} from 'parser/core/Meta'
 import {changelog} from './changelog'
 
-const about = t('brd.about.description')`
+const about = msg({id: 'brd.about.description', message: `
 Welcome to the Bard module! Although Bard might seem to be a straightforward job on the surface, its complexity can be deceiving.
 Considered by many as an "*easy to learn, hard to master*" job, Bards have to make minute-to-minute decisions about their repertoire procs, Damage-over-Time actions, and Soul Voice gauge.
 
@@ -12,7 +12,7 @@ To understand the fundamentals behind the suggestions given below, check out one
 
 - [Icy Veins Bard Guide](https://www.icy-veins.com/ffxiv/bard-guide)
 - [The Balance Bard Guide](https://www.thebalanceffxiv.com/jobs/ranged/bard)
-`
+`})
 
 export const BARD = new Meta({
 	modules: () => import('./modules' /* webpackChunkName: "jobs-brd" */),
@@ -23,7 +23,7 @@ export const BARD = new Meta({
 
 	supportedPatches: {
 		from: '7.0',
-		to: '7.1',
+		to: '7.3',
 	},
 
 	contributors: [

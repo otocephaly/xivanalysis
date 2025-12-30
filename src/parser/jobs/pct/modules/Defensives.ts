@@ -6,7 +6,7 @@ import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 export class Defensives extends CoreDefensives {
 	static override displayOrder = DISPLAY_ORDER.DEFENSIVES
 
-	protected override trackedDefensives = [this.data.actions.TEMPERA_COAT]
+	protected override trackedActions = [this.data.actions.TEMPERA_COAT]
 
 	private lastShieldApplyStatusId: number | null = null
 	private lastShieldApplyTimestamp: number | null = null
@@ -19,7 +19,7 @@ export class Defensives extends CoreDefensives {
 	override initialise() {
 		super.initialise()
 
-		const playerFilter = filter<Event>().source(this.parser.actor.id)
+		const playerFilter = filter<Event>().source(this.parser.actor.id).target(this.parser.actor.id)
 		const statusApplyFilter = playerFilter.type('statusApply')
 		const statusRemoveFilter = playerFilter.type('statusRemove')
 

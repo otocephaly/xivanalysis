@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {dependency} from 'parser/core/Injectable'
 import {Checklist, Requirement, Rule} from 'parser/core/modules/Checklist'
@@ -25,7 +25,7 @@ export class DoTs extends CoreDoTs {
 	protected override addChecklistRules() {
 		const uptimePercent = this.getUptimePercent(this.data.statuses.DIA.id)
 		this.checklist.add(new Rule({
-			name: <Trans id="whm.dots.rule.name">Keep your DoTs up </Trans>,
+			name: <Trans id="whm.dots.rule.name">Keep your DoTs up</Trans>,
 			description: <Trans id="whm.dots.rule.description">
 				As a White Mage, <DataLink status="DIA" showIcon={false} showTooltip={false} /> is significant portion of your sustained damage. Aim to keep it up at all times.
 			</Trans>,

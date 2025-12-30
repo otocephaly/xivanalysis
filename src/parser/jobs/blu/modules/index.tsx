@@ -19,6 +19,7 @@ import {RevengeBlast} from './RevengeBlast'
 import {StatusTimeline} from './StatusTimeline'
 import {Swiftcast} from './Swiftcast'
 import {TripleTrident} from './TripleTrident'
+import {Utilities} from './Utilities'
 import {WingedReprobation} from './WingedReprobation'
 
 export const modules = [
@@ -43,4 +44,5 @@ export const modules = [
 	DroppedBuffs,
 	WingedReprobation,
 	Positionals,
+	Utilities,
 ]

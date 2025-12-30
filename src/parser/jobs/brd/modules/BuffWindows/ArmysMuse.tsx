@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink, StatusLink} from 'components/ui/DbLink'
 import {Icon, Message} from 'semantic-ui-react'
 import {dependency} from '../../../../core/Injectable'
@@ -11,7 +11,7 @@ import {DISPLAY_ORDER} from '../DISPLAY_ORDER'
 
 export class ArmysMuse extends BuffWindow {
 	static override handle = 'armysmuse'
-	static override title = t('brd.armysmuse.title')`Army's Muse`
+	static override title = msg({id: 'brd.armysmuse.title', message: 'Army\'s Muse'})
 	static override displayOrder = DISPLAY_ORDER.ARMYS_MUSE
 
 	@dependency globalCooldown!: GlobalCooldown

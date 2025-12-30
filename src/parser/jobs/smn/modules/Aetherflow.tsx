@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -37,7 +37,7 @@ const FILLER_CASTS: ActionKey[] = [
 
 export class Aetherflow extends Analyser {
 	static override handle = 'aetherflow'
-	static override title = t('smn.aetherflow.title')`Aetherflow`
+	static override title = msg({id: 'smn.aetherflow.title', message: 'Aetherflow'})
 
 	@dependency private data!: Data
 	@dependency private suggestions!: Suggestions
@@ -110,8 +110,7 @@ export class Aetherflow extends Analyser {
 				</Trans>,
 				severity: SEVERITY.MAJOR,
 				why: <Trans id="smn.aetherflow.lost-aetherflow.why">
-					<Plural value={lostAetherflow} one="# stack" other="# stacks"/>
-					of Aetherflow lost.
+					<Plural value={lostAetherflow} one="# stack" other="# stacks"/> of Aetherflow lost.
 				</Trans>,
 			}))
 		}

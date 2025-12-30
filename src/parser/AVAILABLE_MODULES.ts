@@ -1,5 +1,7 @@
 import {EncounterKey} from 'data/ENCOUNTERS'
 import {JobKey} from 'data/JOBS'
+import {DSR} from './bosses/dsr'
+import {EX_TRAIN} from './bosses/extrain'
 import {FRU} from './bosses/fru'
 import {CORE} from './core'
 import {Meta} from './core/Meta'
@@ -65,6 +67,8 @@ export const AVAILABLE_MODULES: AvailableModules = {
 	},
 
 	BOSSES: {
+		DSR,
+		EX_TRAIN,
 		FRU,
 	},
 }

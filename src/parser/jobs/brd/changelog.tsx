@@ -7,6 +7,16 @@ export const changelog = [
 	// 	contributors: [CONTRIBUTORS.YOU],
 	// },
 	{
+		date: new Date('2025-11-02'),
+		Changes: () => <>Update for patch 7.3.</>,
+		contributors: [CONTRIBUTORS.YUZUKITSURU],
+	},
+	{
+		date: new Date('2025-04-29'),
+		Changes: () => <>Update for patch 7.2.</>,
+		contributors: [CONTRIBUTORS.YUZUKITSURU],
+	},
+	{
 		date: new Date('2024-10-20'),
 		Changes: () => <>Add prepend messages info for buff window GCD trackers.</>,
 		contributors: [CONTRIBUTORS.YUZUKITSURU],

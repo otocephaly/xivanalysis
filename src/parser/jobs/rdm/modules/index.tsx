@@ -14,6 +14,7 @@ import {MeleeCombos} from './MeleeCombos'
 import {Prefulgence} from './Prefulgence'
 import {Procs} from './Procs'
 import {Swiftcast} from './Swiftcast'
+import {Utilities} from './Utilities'
 import {ViceOfThorns} from './ViceOfThorns'
 
 export {DualStatistic} from 'parser/jobs/rdm/statistics/DualStatistic'
@@ -35,5 +36,6 @@ export const modules = [
 	MagickedSwordplay,
 	Manafication,
 	Prefulgence,
+	Utilities,
 	ViceOfThorns,
 ]

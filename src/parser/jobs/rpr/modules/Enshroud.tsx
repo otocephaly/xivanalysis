@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {RotationTargetOutcome} from 'components/ui/RotationTable'
 import {Action, ActionKey} from 'data/ACTIONS'
@@ -65,7 +65,7 @@ class EnhancedReapingEvaluator extends NotesEvaluator {
 
 export class Enshroud extends BuffWindow {
 	static override handle = 'enshroud'
-	static override title = t('rpr.enshroud.title')`Enshroud`
+	static override title = msg({id: 'rpr.enshroud.title', message: 'Enshroud'})
 	static override displayOrder = DISPLAY_ORDER.ENSHROUD
 
 	override buffStatus = this.data.statuses.ENSHROUDED

@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import Color from 'color'
 import {ActionLink} from 'components/ui/DbLink'
 import {Event} from 'event'
@@ -32,7 +32,7 @@ const UNBUFFED_SEVERITY = {
 // TODO - Implement some bullshit potency tracking logic so we can correct the gauge for multi-boss instances like dungeons and 24-man raids
 export class Kazematoi extends CoreGauge {
 	static override handle = 'kazematoigauge'
-	static override title = t('nin.kazematoi.title')`Kazematoi Gauge`
+	static override title = msg({id: 'nin.kazematoi.title', message: 'Kazematoi Gauge'})
 
 	@dependency private suggestions!: Suggestions
 

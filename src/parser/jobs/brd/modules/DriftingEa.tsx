@@ -1,38 +1,5 @@
-//                     Lv.89 DRIFTING EA
-//
-//                          ``......`
-//                 `-:+sydmNNNNNNNNNNNmdys+:.
-//             .:ohmNMMMMMMMMMMMMMMMMMMMMMMMNmy+-
-//          .+hNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNdo.
-//       `:hNMMMMMMMMMMMMMMMMMMMMMMMMMMNmmmNMMMMMMMNy-
-//      /dMMMMMMMMMMMMMMMMMMMMMMMMMMms:-....:ohNMMMMMNs.
-//    .yMMMMMMMMMMMMMMMMMMMMMMMMMMMs.          .omMMMMMm/
-//   -mMMMMMMMMMMMMMMMMMMMMMMMMMMMs          --. .sNMMMMMs`
-//  .mMMMMMMMMMMMMMMMMMMMMMMMMMMMM. yhy:    :MMNs  :NMMMMMy`
-//  hMMMMMMMMMMMMMMMMMMMMMMMMMMMMM. mMMM:   `hMMM.  :MMMMMMo
-// -MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMo .yNN/    `:o+    sMMMMMM-
-// oMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM/  ``             .MMMMMMy
-// sMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMs`                dMMMMMM`
-// +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMm-               sMMMMMM:
-// .MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMo              /MMMMMM+
-//  hMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMh`            :MMMMMMo
-//  .MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMd.           -MMMMMM:
-//   +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMd`          -MMMMMN`
-//    yMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMh          -MMMMMo
-//    `dMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM/         -MMMMN.
-//     .mMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMo         .MMMMy
-//      -NMMMMMMMMMMMMMMMMMyNMMMMMMMMMMMMMMM:         .MMMM:
-//       :NMMMMMMMMMMMMMMMMd-hMMMMdoMMMMMMMN`         `MMMM`
-//        /NMMMMMMMhhMMMMMMM/`:so:` NMMMMMMd           NMMN
-//         /NMMMMMMy /mMN++hd`      oMMMMMMm           yMMM
-//          /NMMMMMo  `+h   .`       +NMMMMM/          -MMM`
-//           +MMMMM-                  .sNMMMN-          +MM:
-//            dMMM+                     .omMMm.          +Ns
-//            :Mm:                         :smm-          ./
-//             /                              -+-
-
-import {t} from '@lingui/macro'
-import {Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans} from '@lingui/react/macro'
 import {Tooltip, ActionLink} from 'components/ui/DbLink'
 import {Event, Events} from 'event'
 import {Analyser} from 'parser/core/Analyser'
@@ -67,7 +34,7 @@ interface ConfirmedDriftWindow extends DriftWindow {
 
 export class DriftingEa extends Analyser {
 	static override handle = 'drifting-ea'
-	static override title = t('brd.drifting-ea.title')`Empyreal Arrow Drift`
+	static override title = msg({id: 'brd.drifting-ea.title', message: 'Empyreal Arrow Drift'})
 	static override displayOrder = DISPLAY_ORDER.DRIFTING_EA
 
 	@dependency private data!: Data

@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Trans, Plural} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Trans, Plural} from '@lingui/react/macro'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {Rotation} from 'components/ui/Rotation'
 import {Action} from 'data/ACTIONS/type'
@@ -15,7 +15,7 @@ import {Suggestions, TieredSuggestion, SEVERITY} from 'parser/core/modules/Sugge
 import {Timeline} from 'parser/core/modules/Timeline'
 import {DISPLAY_ORDER} from 'parser/jobs/rdm/modules/DISPLAY_ORDER'
 import {ManaGauge, MANA_DIFFERENCE_THRESHOLD, MANA_CAP} from 'parser/jobs/rdm/modules/ManaGauge'
-import {Fragment} from 'react'
+import {Fragment, ReactNode} from 'react'
 import {Button, Message, Table} from 'semantic-ui-react'
 
 type MeleeCombo = {
@@ -24,7 +24,7 @@ type MeleeCombo = {
 	finisher: {
 		used: number,
 		recommendedActions: Action[],
-		recommendation: JSX.Element
+		recommendation: ReactNode
 	},
 	procs: Status[]
 	broken: boolean,
@@ -53,7 +53,7 @@ enum SuggestionKey {
 
 export class MeleeCombos extends Analyser {
 	static override handle = 'mlc'
-	static override title = t('rdm.meleecombos.title')`Melee Combos`
+	static override title = msg({id: 'rdm.meleecombos.title', message: 'Melee Combos'})
 	static override displayOrder = DISPLAY_ORDER.MELEE_COMBO
 	static override debug = false
 
@@ -101,7 +101,7 @@ export class MeleeCombos extends Analyser {
 		finisher: {
 			used: 0,
 			recommendedActions: [],
-			recommendation: <Trans></Trans>,
+			recommendation: null,
 		},
 		procs: [],
 		broken: false,
@@ -192,7 +192,9 @@ export class MeleeCombos extends Analyser {
 			*/
 			if (action.id === this.data.actions.MANAFICATION.id &&
 				//Since we now have an actual factual AE Combo, check for either the Single Target or AE Target final hit here.
-				current && (current.data.lastAction.action === this.data.actions.ENCHANTED_REDOUBLEMENT.id || current.data.lastAction.action === this.data.actions.ENCHANTED_MOULINET_TROIS.id)) {
+				current && (current.data.lastAction.action === this.data.actions.ENCHANTED_REDOUBLEMENT.id
+					|| current.data.lastAction.action === this.data.actions.MANAFICATION_ENCHANTED_REDOUBLEMENT.id
+					|| current.data.lastAction.action === this.data.actions.ENCHANTED_MOULINET_TROIS.id)) {
 				return
 			}
 			this.breakComboIfExists(event.timestamp)

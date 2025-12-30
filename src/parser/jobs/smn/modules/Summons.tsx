@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {ActionLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Event, Events} from 'event'
@@ -59,7 +59,7 @@ interface SummonWindow {
 
 export class Summons extends Analyser {
 	static override handle = 'summons'
-	static override title = t('smn.summons.title')`Summons`
+	static override title = msg({id: 'smn.summons.title', message: 'Summons'})
 	static override displayOrder = DISPLAY_ORDER.SUMMONS
 
 	@dependency private data!: Data

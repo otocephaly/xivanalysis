@@ -10,6 +10,7 @@ import {Procs} from './Procs'
 import {StarryMuse} from './StarryMuse'
 import {Swiftcast} from './Swiftcast'
 import {Tincture} from './Tincture'
+import {Utilities} from './Utilities'
 
 export const modules = [
 	AlwaysBeCasting,
@@ -24,4 +25,5 @@ export const modules = [
 	StarryMuse,
 	Swiftcast,
 	Tincture,
+	Utilities,
 ]
