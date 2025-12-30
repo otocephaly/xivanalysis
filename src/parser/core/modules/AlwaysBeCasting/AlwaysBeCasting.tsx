@@ -1,5 +1,5 @@
-import {t} from '@lingui/macro'
-import {Plural, Trans} from '@lingui/react'
+import {msg} from '@lingui/core/macro'
+import {Plural, Trans} from '@lingui/react/macro'
 import {ActionLink, DataLink} from 'components/ui/DbLink'
 import {NormalisedMessage} from 'components/ui/NormalisedMessage'
 import {Rotation} from 'components/ui/Rotation'
@@ -84,7 +84,7 @@ export interface AnimationLock {
 
 export class AlwaysBeCasting extends Analyser {
 	static override handle = 'abc'
-	static override title = t('core.abc.title')`Always Be Casting (ABC) Fundamentals`
+	static override title = msg({id: 'core.abc.title', message: 'Always Be Casting (ABC) Fundamentals'})
 	static override displayOrder = DISPLAY_ORDER.ABC_TABLE
 	static override debug = false
 
