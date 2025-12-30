@@ -145,14 +145,20 @@ export class AlwaysBeCasting extends Analyser {
 	protected checkModule: ReactNode = <Trans id="core.abc.suggestion.check-module-link">
 		Check the {this.moduleLink} module below for more detailed analysis.
 	</Trans>
-	protected gcdUptimeSuggestionContent: ReactNode = <><Trans id="core.abc.suggestion.uptime.content">
-		Make sure you're always doing something. It's often better to make small
-		mistakes while keeping the GCD rolling than it is to perform the correct
-		rotation slowly.
-	</Trans><br/>{this.checkModule}</>
-	protected weavingSuggestionContent: ReactNode = <><Trans id="core.abc.suggestion.weaving.content">
-		Avoid weaving more actions than you have time for in a single GCD window. Doing so will delay your next GCD, reducing possible uptime.
-	</Trans><br/>{this.checkModule}</>
+	protected gcdUptimeSuggestionContent: ReactNode = <>
+		<Trans id="core.abc.suggestion.uptime.content">
+			Make sure you're always doing something. It's often better to make small
+			mistakes while keeping the GCD rolling than it is to perform the correct
+			rotation slowly.
+		</Trans><br/>
+		{this.checkModule}
+	</>
+	protected weavingSuggestionContent: ReactNode = <>
+		<Trans id="core.abc.suggestion.weaving.content">
+			Avoid weaving more actions than you have time for in a single GCD window. Doing so will delay your next GCD, reducing possible uptime.
+		</Trans><br/>
+		{this.checkModule}
+	</>
 
 	// footer
 	protected footer: ReactNode = <><Trans id="core.abc.notes-footer">
@@ -177,13 +183,15 @@ export class AlwaysBeCasting extends Analyser {
 	 * @param event preparation event that could determine whether it happened before the actual cast
 	 */
 	private onBegin(event: Events['prepare']) {
-		// don't want oGCDs resetting the window
 		const action: Action | undefined = this.data.getAction(event.action)
-		const actionIsOGCD: boolean = !this.data.getAction(event.action)?.onGcd
-		// Ignore actions we were told to ignore and oGCDs and not actions
+
+		// Bail if we can't find the action data
 		if (action === undefined) { return }
-		if (actionIsOGCD) { return }
+
+		// Ignore actions we were told to ignore and oGCDs
+		if (!action.onGcd) { return }
 		if (this.ignoredActionIds.includes(action.id)) { return }
+
 		// use this timestamp for interrupted actions
 		this.prepareTime = event.timestamp
 		// if coming from a hard cast, use this timestamp instead
@@ -196,6 +204,10 @@ export class AlwaysBeCasting extends Analyser {
 	 */
 	protected onCast(event: Events['action']) {
 		const action: Action | undefined = this.data.getAction(event.action)
+
+		// Bail if we can't find the action data
+		if (action === undefined) { return }
+
 		if (this.aliveHook !== undefined) {
 			this.prematureCast = event
 			return
@@ -207,28 +219,28 @@ export class AlwaysBeCasting extends Analyser {
 			return
 		}
 
-		// if not an action or autoattack or if specifically ignored, stop
-		if (action === undefined) { return }
+		// if autoattack or if specifically ignored, stop
 		if (action.autoAttack) { return }
 		if (this.ignoredActionIds.includes(action.id)) { return }
 
 		// if an oGCD, just add it to our list of actions
-		const actionIsOGCD: boolean = !action.onGcd
-		if (actionIsOGCD && this.noCastWindows.current !== undefined) {
+		if (!action.onGcd && this.noCastWindows.current !== undefined) {
 			this.noCastWindows.current.actions.push(event)
 			this.noCastWindows.current.doNothingForegivness += this.ogcdOffset
 			return
 		}
 
-		// caster tax is considered if the cast is considered a spell
+		// caster tax is considered if the cast is considered a spell, and has a cast time greater than the GCD length
 		// action.castTime !== undefined is always true since for some reason it comes as 0. so checking for attribute is preffered
 		const casterTax: number = action.speedAttribute !== undefined && action.speedAttribute === Attribute.SPELL_SPEED
 			? GCD_CASTER_TAX_OFFSET : 0
+
 		// if swift up, no cast time. if not, check cast time if any. consider caster tax and animation lock
 		// again can't trust castTime since it defaults to zero for some reason. used attribute instead
 		const animationLock: number = this.actionsWithExtraAnimationLock?.find(item => item.actionID === event.action)?.timeLocked ?? this.defaultActionAnimationLock
 		const availableOGCDTime: number = casterTax
 			+ Math.max(animationLock, (this.castTime.castForEvent(event) ?? animationLock))
+
 		// take recast unless casttime is longer. this will also help with the cases of caster tax when recast = casttime
 		let actionRecast: number = this.castTime.recastForEvent(event) ?? this.gcd.getDuration()
 		actionRecast = (actionRecast > availableOGCDTime) ? actionRecast : availableOGCDTime
@@ -284,7 +296,10 @@ export class AlwaysBeCasting extends Analyser {
 	private onInterrupt(event: Events['interrupt']) {
 		if (this.noCastWindows.current === undefined) { return }
 		const action: Action | undefined = this.data.getAction(event.action)
+
+		// Bail if we can't find the action data
 		if (action === undefined) { return }
+
 		if (this.noCastWindows.current.interruptedActions === undefined) { this.noCastWindows.current.interruptedActions = [] }
 		this.noCastWindows.current.interruptedActions?.push(action)
 		this.noCastWindows.current.doNothingForegivness += event.timestamp - this.prepareTime
@@ -298,11 +313,13 @@ export class AlwaysBeCasting extends Analyser {
 	private onDeath(event: Events['death']) {
 		if (this.currentExcludedTime === undefined) { this.currentExcludedTime = event.timestamp }
 		if (this.noCastWindows.current === undefined) { return }
+
 		// check if there was a significant delay since starting the fight and then they died
 		if (!this.firstCastHappened) {
 			this.checkAndSaveStartOfFight(event)
 			this.firstCastHappened = true
 		}
+
 		// want to start death event when applicable
 		this.checkAndSaveDeath(event)
 
